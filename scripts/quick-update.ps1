@@ -1,5 +1,5 @@
 # 快速更新本地测试环境
-# 用法: .\quick-update.ps1
+# 用法: .\scripts\quick-update.ps1
 # 注意: 需要管理员权限
 
 param(

@@ -160,7 +160,7 @@ $config = @{
 
 - [数据库配置完整指南](../docs/DATABASE_CONFIGURATION_GUIDE.md)
 - [快速开始](../docs/QUICK_START_DATABASE_CONFIG.md)
-- [部署指南](../DEPLOYMENT_WINDOWS.md)
+- [部署指南](../docs/DEPLOYMENT_WINDOWS.md)
 
 ---
 

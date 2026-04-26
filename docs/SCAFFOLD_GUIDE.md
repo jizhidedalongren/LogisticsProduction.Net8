@@ -10,10 +10,10 @@
 
 ```powershell
 # 中文版
-.\scaffold-cn.ps1
+.\scripts\scaffold-cn.ps1
 
 # 英文版
-.\scaffold.ps1
+.\scripts\scaffold.ps1
 ```
 
 按提示输入：
@@ -26,10 +26,10 @@
 
 ```powershell
 # 只读功能
-.\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask
+.\scripts\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask
 
 # 读写功能
-.\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask -IncludeCommand
+.\scripts\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask -IncludeCommand
 ```
 
 ### 示例
@@ -150,7 +150,7 @@ CREATE INDEX IX_WareHouseTask_Status ON WareHouseTask(Status);
 
 ## 🎨 自定义模板
 
-如需修改生成的代码模板，编辑 `scaffold-feature.ps1` 文件。
+如需修改生成的代码模板，编辑 `scripts/scaffold-feature.ps1` 文件。
 
 ## 💡 最佳实践
 

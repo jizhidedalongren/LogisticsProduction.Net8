@@ -48,7 +48,7 @@ dotnet run
 ### IIS 部署
 ```powershell
 # 首次安装指定端口
-.\deploy-to-iis.ps1 -FirstInstall -Port 9000
+.\scripts\deploy-to-iis.ps1 -FirstInstall -Port 9000
 
 # 修改已部署的端口
 Set-WebBinding -Name "LogisticsProduction.API" -BindingInformation "*:8008:*" -PropertyName Port -Value 9000
@@ -77,13 +77,13 @@ Restart-Service -Name "LogisticsProductionNet8"
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 # 中文交互式生成
-.\scaffold-cn.ps1
+.\scripts\scaffold-cn.ps1
 
 # 英文交互式生成
-.\scaffold.ps1
+.\scripts\scaffold.ps1
 
 # 命令行直接生成
-.\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask -IncludeCommand
+.\scripts\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask -IncludeCommand
 ```
 
 ## 📦 部署命令
@@ -91,19 +91,19 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 ### IIS 部署
 ```powershell
 # 首次安装
-.\deploy-to-iis.ps1 -FirstInstall
+.\scripts\deploy-to-iis.ps1 -FirstInstall
 
 # 标准更新
-.\deploy-to-iis.ps1
+.\scripts\deploy-to-iis.ps1
 
 # 热更新（停机 2-5 秒）
-.\deploy-to-iis.ps1 -HotUpdate
+.\scripts\deploy-to-iis.ps1 -HotUpdate
 ```
 
 ### Windows 服务
 ```powershell
 # 部署/更新
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 ```
 
 ## 🔍 管理命令

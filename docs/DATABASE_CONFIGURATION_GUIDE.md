@@ -335,7 +335,7 @@ if (string.IsNullOrEmpty(connStr))
 
 - [.NET Configuration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/)
 - [Safe storage of app secrets in development](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)
-- [部署指南](../DEPLOYMENT_WINDOWS.md)
+- [部署指南](DEPLOYMENT_WINDOWS.md)
 
 ---
 

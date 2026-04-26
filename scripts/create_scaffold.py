@@ -5,7 +5,7 @@
 生成交互式 PowerShell 脚本用于创建功能脚手架
 
 使用方法：
-  python create_scaffold.py  # 生成 scaffold-cn.ps1
+  python .\\scripts\\create_scaffold.py  # 生成 scripts\\scaffold-cn.ps1
   
 注意：生成的 PowerShell 脚本使用 UTF-8 BOM 编码，确保中文正确显示
 """
@@ -54,11 +54,15 @@ if ($includeCommand -eq "y") {
 '''
 
 # 写入文件，使用 UTF-8 BOM 编码（PowerShell 兼容）
-with open('scaffold-cn.ps1', 'w', encoding='utf-8-sig', newline='\r\n') as f:
+from pathlib import Path
+
+output_path = Path(__file__).with_name('scaffold-cn.ps1')
+
+with open(output_path, 'w', encoding='utf-8-sig', newline='\r\n') as f:
     f.write(content)
 
-print("✓ 已生成 scaffold-cn.ps1（中文交互版）")
+print(f"✓ 已生成 {output_path.name}（中文交互版）")
 print("\n使用方法：")
-print("  .\scaffold-cn.ps1    # 中文交互式生成")
-print("  .\scaffold.ps1       # 英文交互式生成")
-print("  .\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask  # 命令行直接生成")
+print("  .\\scripts\\scaffold-cn.ps1    # 中文交互式生成")
+print("  .\\scripts\\scaffold.ps1       # 英文交互式生成")
+print("  .\\scripts\\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask  # 命令行直接生成")

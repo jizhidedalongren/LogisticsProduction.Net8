@@ -25,7 +25,7 @@ dotnet publish -c Release -o ./publish
 cd publish
 
 # 3. 运行 IIS 部署脚本（更新模式）
-.\deploy-to-iis.ps1
+.\scripts\deploy-to-iis.ps1
 ```
 
 脚本会自动：
@@ -48,7 +48,7 @@ dotnet publish -c Release -o ./publish
 cd publish
 
 # 3. 使用热更新模式
-.\deploy-to-iis.ps1 -HotUpdate
+.\scripts\deploy-to-iis.ps1 -HotUpdate
 ```
 
 热更新使用 `app_offline.htm` 方法，停机时间约 2-5 秒。
@@ -243,7 +243,7 @@ Write-Host "访问: http://localhost:8008/swagger" -ForegroundColor Yellow
 使用方法：
 ```powershell
 # 以管理员身份运行
-.\quick-update.ps1
+.\scripts\quick-update.ps1
 ```
 
 ---
@@ -261,5 +261,5 @@ Write-Host "访问: http://localhost:8008/swagger" -ForegroundColor Yellow
 ## 相关文档
 
 - 完整部署指南：`DEPLOYMENT_WINDOWS.md`
-- IIS 部署脚本：`deploy-to-iis.ps1`
-- Windows 服务部署：`deploy.ps1`
+- IIS 部署脚本：`scripts/deploy-to-iis.ps1`
+- Windows 服务部署：`scripts/deploy.ps1`

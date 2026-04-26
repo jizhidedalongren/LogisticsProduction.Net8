@@ -231,7 +231,7 @@ app.Run();
 
 ```powershell
 # 使用部署脚本
-.\deploy-to-iis.ps1 -FirstInstall -Port 9000
+.\scripts\deploy-to-iis.ps1 -FirstInstall -Port 9000
 
 # 或手动创建
 New-Website -Name "LogisticsProduction.API" `

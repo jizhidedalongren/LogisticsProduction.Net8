@@ -6,13 +6,13 @@
 |---------|---------|---------|
 | 了解项目 | README.md | - |
 | 快速查命令 | QUICK_REFERENCE.md ⭐ | - |
-| 开发新功能 | DEVELOPMENT_GUIDE.md | `.\scaffold-cn.ps1` |
-| 部署到 IIS | DEPLOYMENT_WINDOWS.md | `.\deploy-to-iis.ps1 -FirstInstall` |
-| 部署到 Windows 服务 | DEPLOYMENT_WINDOWS.md | `.\deploy.ps1 -Environment Production` |
-| 更新 IIS 应用 | DEPLOYMENT_WINDOWS.md | `.\deploy-to-iis.ps1` |
-| 更新 Windows 服务 | DEPLOYMENT_WINDOWS.md | `.\deploy.ps1 -Environment Production` |
+| 开发新功能 | DEVELOPMENT_GUIDE.md | `.\scripts\scaffold-cn.ps1` |
+| 部署到 IIS | DEPLOYMENT_WINDOWS.md | `.\scripts\deploy-to-iis.ps1 -FirstInstall` |
+| 部署到 Windows 服务 | DEPLOYMENT_WINDOWS.md | `.\scripts\deploy.ps1 -Environment Production` |
+| 更新 IIS 应用 | DEPLOYMENT_WINDOWS.md | `.\scripts\deploy-to-iis.ps1` |
+| 更新 Windows 服务 | DEPLOYMENT_WINDOWS.md | `.\scripts\deploy.ps1 -Environment Production` |
 | 了解架构规范 | ARCHITECTURE.md | - |
-| 使用脚手架 | SCAFFOLD_GUIDE.md | `.\scaffold-cn.ps1` |
+| 使用脚手架 | SCAFFOLD_GUIDE.md | `.\scripts\scaffold-cn.ps1` |
 | 生成实体类 | docs/entity-generator/README.md ⭐ | 使用 API 接口 |
 
 ---
@@ -38,20 +38,20 @@
 ## 🛠️ 脚本工具
 
 ### 脚手架生成
-- `scaffold-cn.ps1` - 中文交互式脚手架生成器（推荐）⭐
-- `scaffold.ps1` - 英文交互式脚手架生成器
-- `scaffold-feature.ps1` - 命令行脚手架生成器（核心脚本）
-- `create_scaffold.py` - Python 辅助脚本（生成 scaffold-cn.ps1）
+- `scripts/scaffold-cn.ps1` - 中文交互式脚手架生成器（推荐）⭐
+- `scripts/scaffold.ps1` - 英文交互式脚手架生成器
+- `scripts/scaffold-feature.ps1` - 命令行脚手架生成器（核心脚本）
+- `scripts/create_scaffold.py` - Python 辅助脚本（生成 scaffold-cn.ps1）
 
 ### 部署脚本
-- `deploy.ps1` - 通用部署脚本（支持 IIS 和 Windows 服务）⭐
-- `deploy-to-iis.ps1` - IIS 专用部署脚本（首次安装 + 更新 + 热更新）⭐
+- `scripts/deploy.ps1` - 通用部署脚本（支持 IIS 和 Windows 服务）⭐
+- `scripts/deploy-to-iis.ps1` - IIS 专用部署脚本（首次安装 + 更新 + 热更新）⭐
 
 ### 工具脚本
-- `fix-utf8-bom.ps1` - 修复 PowerShell 脚本编码为 UTF-8 BOM
-- `generate-entities.ps1` - SqlSugar 实体类生成工具
+- `scripts/fix-utf8-bom.ps1` - 修复 PowerShell 脚本编码为 UTF-8 BOM
+- `scripts/generate-entities.ps1` - SqlSugar 实体类生成工具
 
-**注意：** 所有包含中文的 PowerShell 脚本均使用 UTF-8 BOM 编码，确保中文正确显示。如遇到中文乱码，运行 `.\fix-utf8-bom.ps1` 修复。
+**注意：** 所有包含中文的 PowerShell 脚本均使用 UTF-8 BOM 编码，确保中文正确显示。如遇到中文乱码，运行 `.\scripts\fix-utf8-bom.ps1` 修复。
 
 ## 📂 项目结构
 
@@ -88,18 +88,18 @@ LogisticsProduction.Net8/
 
 ### 我想开发新功能
 1. 阅读 **DEVELOPMENT_GUIDE.md** 了解开发流程
-2. 运行 `.\scaffold-cn.ps1` 生成代码骨架
+2. 运行 `.\scripts\scaffold-cn.ps1` 生成代码骨架
 3. 参考 **ARCHITECTURE.md** 遵循架构规范
 
 ### 我想部署到生产环境
 1. 阅读 **DEPLOYMENT_WINDOWS.md** 选择部署方式
-2. IIS 部署：运行 `.\deploy-to-iis.ps1 -FirstInstall`
-3. Windows 服务：运行 `.\deploy.ps1 -Environment Production`
+2. IIS 部署：运行 `.\scripts\deploy-to-iis.ps1 -FirstInstall`
+3. Windows 服务：运行 `.\scripts\deploy.ps1 -Environment Production`
 
 ### 我想更新已部署的应用
-1. IIS 更新：`.\deploy-to-iis.ps1`
-2. IIS 热更新：`.\deploy-to-iis.ps1 -HotUpdate`
-3. Windows 服务：`.\deploy.ps1 -Environment Production`
+1. IIS 更新：`.\scripts\deploy-to-iis.ps1`
+2. IIS 热更新：`.\scripts\deploy-to-iis.ps1 -HotUpdate`
+3. Windows 服务：`.\scripts\deploy.ps1 -Environment Production`
 
 ### 我想了解项目架构
 1. 阅读 **ARCHITECTURE.md** 了解层间依赖规则
@@ -139,7 +139,7 @@ LogisticsProduction.Net8/
 
 ### 修改端口
 - **开发环境：** 编辑 `appsettings.Development.json` 或使用 `dotnet run --urls "http://localhost:8080"`
-- **IIS 部署：** `.\deploy-to-iis.ps1 -FirstInstall -Port 9000` 或使用 IIS 管理器修改绑定
+- **IIS 部署：** `.\scripts\deploy-to-iis.ps1 -FirstInstall -Port 9000` 或使用 IIS 管理器修改绑定
 - **Windows 服务：** 编辑 `appsettings.Production.json` 中的 Kestrel 配置
 
 ### 执行策略

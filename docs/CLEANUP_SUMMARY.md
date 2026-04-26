@@ -155,7 +155,7 @@
 3. 根据需求查阅对应文档
 
 ### 开发人员
-1. 使用 `.\scaffold-cn.ps1` 快速生成新功能
+1. 使用 `.\scripts\scaffold-cn.ps1` 快速生成新功能
 2. 参考 `DEVELOPMENT_GUIDE.md` 了解开发流程
 3. 遵循 `ARCHITECTURE.md` 的架构规范
 

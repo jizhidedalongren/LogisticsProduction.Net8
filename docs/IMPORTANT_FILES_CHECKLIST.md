@@ -26,8 +26,8 @@
 
 | 文件 | 位置 | 说明 | 备份方式 |
 |------|------|------|---------|
-| `deploy.ps1` | 项目根目录 | 部署脚本 | Git 提交 |
-| `deploy-to-iis.ps1` | 项目根目录 | IIS 部署脚本 | Git 提交 |
+| `scripts/deploy.ps1` | scripts/ | 部署脚本 | Git 提交 |
+| `scripts/deploy-to-iis.ps1` | scripts/ | IIS 部署脚本 | Git 提交 |
 | 文档文件 | docs/ | 项目文档 | Git 提交 |
 
 ---
@@ -49,8 +49,8 @@ appsettings.Development.json
 nlog.config
 LogisticsProduction.Net8.csproj
 LogisticsProduction.Net8.sln
-deploy.ps1
-deploy-to-iis.ps1
+scripts/deploy.ps1
+scripts/deploy-to-iis.ps1
 ```
 
 ---

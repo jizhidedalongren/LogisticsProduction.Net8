@@ -1,10 +1,10 @@
 # SqlSugar 实体类生成脚本
 # 
 # 使用方法:
-#   .\generate-entities.ps1              # 交互式生成
-#   .\generate-entities.ps1 -All         # 生成所有表
-#   .\generate-entities.ps1 -Table "TableName"  # 生成指定表
-#   .\generate-entities.ps1 -Table "TableName" -WithBase  # 生成指定表（继承 BaseEntity）
+#   .\scripts\generate-entities.ps1              # 交互式生成
+#   .\scripts\generate-entities.ps1 -All         # 生成所有表
+#   .\scripts\generate-entities.ps1 -Table "TableName"  # 生成指定表
+#   .\scripts\generate-entities.ps1 -Table "TableName" -WithBase  # 生成指定表（继承 BaseEntity）
 #
 # 前置要求:
 #   1. 在 appsettings.json 中配置数据库连接字符串
@@ -60,9 +60,9 @@ TestEntityGenerator.TestGeneration();
     Write-Host "TestEntityGenerator.TestGeneration();" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "或者使用以下命令行参数:" -ForegroundColor Yellow
-    Write-Host "  .\generate-entities.ps1              # 交互式" -ForegroundColor Cyan
-    Write-Host "  .\generate-entities.ps1 -All         # 生成所有表" -ForegroundColor Cyan
-    Write-Host "  .\generate-entities.ps1 -Table 'Product'  # 生成指定表" -ForegroundColor Cyan
+    Write-Host "  .\scripts\generate-entities.ps1              # 交互式" -ForegroundColor Cyan
+    Write-Host "  .\scripts\generate-entities.ps1 -All         # 生成所有表" -ForegroundColor Cyan
+    Write-Host "  .\scripts\generate-entities.ps1 -Table 'Product'  # 生成指定表" -ForegroundColor Cyan
     exit 0
 }
 

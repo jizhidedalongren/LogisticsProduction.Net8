@@ -1,7 +1,7 @@
 ﻿# IIS 部署脚本 - 在服务器上运行
-# 用法: .\deploy-to-iis.ps1 -FirstInstall  (首次安装)
-#       .\deploy-to-iis.ps1                (更新部署)
-#       .\deploy-to-iis.ps1 -HotUpdate     (热更新)
+# 用法: .\scripts\deploy-to-iis.ps1 -FirstInstall  (首次安装)
+#       .\scripts\deploy-to-iis.ps1                (更新部署)
+#       .\scripts\deploy-to-iis.ps1 -HotUpdate     (热更新)
 
 param(
     [string]$SiteName = "LogisticsProduction.API",
@@ -29,8 +29,8 @@ if (-not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Adm
 # 导入 IIS 模块
 Import-Module WebAdministration -ErrorAction Stop
 
-# 获取源文件目录
-$sourceDir = $PSScriptRoot
+# 获取项目根目录
+$projectRoot = Split-Path $PSScriptRoot -Parent
 
 # 检查 IIS 站点是否存在
 $siteExists = Test-Path "IIS:\Sites\$SiteName"
@@ -84,14 +84,14 @@ if ($FirstInstall) {
     # 3. 设置目录权限
     Write-Host "[3/6] 设置目录权限..." -ForegroundColor Green
     
-    icacls $DeployPath /grant "IIS AppPool\$AppPoolName:(OI)(CI)RX" /T
-    icacls $logsPath /grant "IIS AppPool\$AppPoolName:(OI)(CI)M" /T
+    icacls $DeployPath /grant "IIS AppPool\${AppPoolName}:(OI)(CI)RX" /T
+    icacls $logsPath /grant "IIS AppPool\${AppPoolName}:(OI)(CI)M" /T
     
     Write-Host "  ✓ 权限设置完成" -ForegroundColor Gray
     
     # 4. 复制文件
     Write-Host "[4/6] 复制文件..." -ForegroundColor Green
-    Copy-Item -Path "$sourceDir\*" -Destination $DeployPath -Recurse -Force -Exclude "*.ps1","*.md","VERSION.txt","部署说明.txt"
+    Copy-Item -Path "$projectRoot\*" -Destination $DeployPath -Recurse -Force -Exclude "*.ps1","*.md","VERSION.txt","部署说明.txt"
     Write-Host "  ✓ 文件复制完成" -ForegroundColor Gray
     
     # 5. 创建 IIS 网站
@@ -188,7 +188,7 @@ if ($FirstInstall) {
         
         # 复制新文件
         Write-Host "[3/5] 复制新文件..." -ForegroundColor Green
-        Copy-Item -Path "$sourceDir\*" -Destination $DeployPath -Recurse -Force -Exclude "*.ps1","*.md","VERSION.txt","部署说明.txt","app_offline.htm"
+        Copy-Item -Path "$projectRoot\*" -Destination $DeployPath -Recurse -Force -Exclude "*.ps1","*.md","VERSION.txt","部署说明.txt","app_offline.htm"
         
         # 保留生产配置
         if (Test-Path "$backupPath\appsettings.Production.json") {
@@ -223,7 +223,7 @@ if ($FirstInstall) {
         
         # 复制新文件
         Write-Host "[3/5] 复制新文件..." -ForegroundColor Green
-        Copy-Item -Path "$sourceDir\*" -Destination $DeployPath -Recurse -Force -Exclude "*.ps1","*.md","VERSION.txt","部署说明.txt"
+        Copy-Item -Path "$projectRoot\*" -Destination $DeployPath -Recurse -Force -Exclude "*.ps1","*.md","VERSION.txt","部署说明.txt"
         
         # 保留生产配置
         if (Test-Path "$backupPath\appsettings.Production.json") {

@@ -2,13 +2,13 @@
 
 ## 📖 文档导航
 
-- 📚 **[文档索引](DOCS_INDEX.md)** - 完整文档导航
-- ⚡ **[快速参考](QUICK_REFERENCE.md)** - 常用命令速查卡片
-- 🔌 **[端口配置](PORT_CONFIG_GUIDE.md)** - 端口配置完整指南
-- 🏗️ **[架构规范](ARCHITECTURE.md)** - 项目架构和开发规范
-- 📝 **[开发指南](DEVELOPMENT_GUIDE.md)** - 新功能开发流程
-- 🚀 **[部署指南](DEPLOYMENT_WINDOWS.md)** - Windows 部署完整说明
-- 🛠️ **[脚手架指南](SCAFFOLD_GUIDE.md)** - 脚手架工具使用
+- 📚 **[文档索引](docs/DOCS_INDEX.md)** - 完整文档导航
+- ⚡ **[快速参考](docs/QUICK_REFERENCE.md)** - 常用命令速查卡片
+- 🔌 **[端口配置](docs/PORT_CONFIG_GUIDE.md)** - 端口配置完整指南
+- 🏗️ **[架构规范](docs/ARCHITECTURE.md)** - 项目架构和开发规范
+- 📝 **[开发指南](docs/DEVELOPMENT_GUIDE.md)** - 新功能开发流程
+- 🚀 **[部署指南](docs/DEPLOYMENT_WINDOWS.md)** - Windows 部署完整说明
+- 🛠️ **[脚手架指南](docs/SCAFFOLD_GUIDE.md)** - 脚手架工具使用
 - 🔄 **[实体生成器指南](docs/entity-generator/README.md)** - SqlSugar 实体类生成 ⭐
 
 ---
@@ -61,7 +61,7 @@ http://localhost:5000/swagger
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 # 然后运行脚本
-.\scaffold-cn.ps1
+.\scripts\scaffold-cn.ps1
 ```
 
 ### 生产部署
@@ -73,16 +73,16 @@ dotnet publish -c Release -o ./publish
 
 # 2. 在服务器上运行（管理员权限）
 # 首次安装（默认端口 8008）
-.\deploy-to-iis.ps1 -FirstInstall
+.\scripts\deploy-to-iis.ps1 -FirstInstall
 
 # 首次安装（自定义端口）
-.\deploy-to-iis.ps1 -FirstInstall -Port 9000
+.\scripts\deploy-to-iis.ps1 -FirstInstall -Port 9000
 
 # 3. 日常更新
-.\deploy-to-iis.ps1
+.\scripts\deploy-to-iis.ps1
 
 # 热更新（停机时间 2-5 秒）
-.\deploy-to-iis.ps1 -HotUpdate
+.\scripts\deploy-to-iis.ps1 -HotUpdate
 ```
 
 #### Windows 服务部署
@@ -94,19 +94,19 @@ dotnet publish -c Release -o ./publish
 Compress-Archive -Path .\publish\* -DestinationPath LogisticsProduction.zip
 
 # 3. 在服务器上解压并部署（管理员权限）
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 
 # 4. 日常更新（使用相同命令）
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 ```
 
-详细部署说明参考 `DEPLOYMENT_WINDOWS.md`
+详细部署说明参考 `docs/DEPLOYMENT_WINDOWS.md`
 
 ## 📖 文档
 
-- **ARCHITECTURE.md** - 项目架构和开发规范
-- **DEVELOPMENT_GUIDE.md** - 新功能开发流程
-- **DEPLOYMENT_WINDOWS.md** - Windows 部署完整指南
+- **docs/ARCHITECTURE.md** - 项目架构和开发规范
+- **docs/DEVELOPMENT_GUIDE.md** - 新功能开发流程
+- **docs/DEPLOYMENT_WINDOWS.md** - Windows 部署完整指南
 
 ## 🛠️ 开发工具
 
@@ -187,16 +187,16 @@ generator.GenerateEntityWithBase("Product");
 
 ```powershell
 # 交互式生成
-.\generate-entities.ps1
+.\scripts\generate-entities.ps1
 
 # 生成所有表
-.\generate-entities.ps1 -All
+.\scripts\generate-entities.ps1 -All
 
 # 生成指定表
-.\generate-entities.ps1 -Table "Product"
+.\scripts\generate-entities.ps1 -Table "Product"
 
 # 生成指定表（继承 BaseEntity）
-.\generate-entities.ps1 -Table "Product" -WithBase
+.\scripts\generate-entities.ps1 -Table "Product" -WithBase
 ```
 
 #### 配置数据库连接
@@ -307,13 +307,13 @@ public class Product : BaseEntity
 
 ```powershell
 # 中文交互式生成（推荐）
-.\scaffold-cn.ps1
+.\scripts\scaffold-cn.ps1
 
 # 英文交互式生成
-.\scaffold.ps1
+.\scripts\scaffold.ps1
 
 # 命令行直接生成
-.\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask -IncludeCommand
+.\scripts\scaffold-feature.ps1 -FeatureName WareHouse -EntityName WareHouseTask -IncludeCommand
 ```
 
 按提示输入：
@@ -328,7 +328,7 @@ public class Product : BaseEntity
 - Controllers 层 API 端点
 - 数据库建表 SQL 脚本
 
-详细使用说明参考 `SCAFFOLD_GUIDE.md`
+详细使用说明参考 `docs/SCAFFOLD_GUIDE.md`
 
 **注意：** 所有包含中文的 PowerShell 脚本均使用 UTF-8 BOM 编码保存，确保中文正确显示。
 
@@ -346,13 +346,13 @@ dotnet test                 # 运行测试
 ### 部署
 ```powershell
 # IIS 部署
-.\deploy-to-iis.ps1 -FirstInstall           # 首次安装（默认端口 8008）
-.\deploy-to-iis.ps1 -FirstInstall -Port 9000  # 首次安装（自定义端口）
-.\deploy-to-iis.ps1                         # 更新部署
-.\deploy-to-iis.ps1 -HotUpdate              # 热更新（停机 2-5 秒）
+.\scripts\deploy-to-iis.ps1 -FirstInstall           # 首次安装（默认端口 8008）
+.\scripts\deploy-to-iis.ps1 -FirstInstall -Port 9000  # 首次安装（自定义端口）
+.\scripts\deploy-to-iis.ps1                         # 更新部署
+.\scripts\deploy-to-iis.ps1 -HotUpdate              # 热更新（停机 2-5 秒）
 
 # Windows 服务部署
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 ```
 
 ### IIS 管理
@@ -521,7 +521,7 @@ Restart-Service -Name "LogisticsProductionNet8"
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 # 然后运行脚本
-.\deploy.ps1
+.\scripts\deploy.ps1
 ```
 
 **说明：**
@@ -531,7 +531,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 ### PowerShell 脚本编码
 - 所有包含中文的 PowerShell 脚本使用 **UTF-8 BOM** 编码
-- 如遇到中文乱码，运行：`.\fix-utf8-bom.ps1`
+- 如遇到中文乱码，运行：`.\scripts\fix-utf8-bom.ps1`
 - 新建包含中文的脚本时，请使用 UTF-8 BOM 编码保存
 
 ### 管理员权限
@@ -546,7 +546,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 4. **Controllers 层** - 创建 API 端点
 5. **DI 注册** - 在 InfrastructureModule 中注册
 
-详细步骤参考 `DEVELOPMENT_GUIDE.md`
+详细步骤参考 `docs/DEVELOPMENT_GUIDE.md`
 
 ## 📊 技术栈
 
@@ -573,4 +573,4 @@ Get-Website -Name "LogisticsProduction.API"
 Get-WebAppPoolState -Name "LogisticsProductionNet8"
 ```
 
-详细故障处理参考 `DEPLOYMENT_WINDOWS.md`
+详细故障处理参考 `docs/DEPLOYMENT_WINDOWS.md`

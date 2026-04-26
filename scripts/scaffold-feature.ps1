@@ -1,5 +1,5 @@
 ﻿# 业务功能脚手架生成器（.NET 8 版本）
-# 用法: .\scaffold-feature.ps1 -FeatureName "WareHouse" -EntityName "WareHouseTask"
+# 用法: .\scripts\scaffold-feature.ps1 -FeatureName "WareHouse" -EntityName "WareHouseTask"
 
 param(
     [Parameter(Mandatory=$true)]

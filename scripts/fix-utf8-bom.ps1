@@ -7,6 +7,8 @@ $files = @(
     "deploy-to-iis.ps1"
 )
 
+$scriptRoot = $PSScriptRoot
+
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "PowerShell 脚本编码修复工具" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
@@ -17,13 +19,14 @@ $successCount = 0
 $failCount = 0
 
 foreach ($file in $files) {
-    if (Test-Path $file) {
+    $filePath = Join-Path $scriptRoot $file
+    if (Test-Path $filePath) {
         try {
             # 读取文件内容
-            $content = Get-Content -Path $file -Raw -Encoding UTF8
+            $content = Get-Content -Path $filePath -Raw -Encoding UTF8
             
             # 使用 UTF-8 BOM 编码写入
-            [System.IO.File]::WriteAllText("$PWD\$file", $content, $utf8Bom)
+            [System.IO.File]::WriteAllText($filePath, $content, $utf8Bom)
             
             Write-Host "  ✓ 已转换: $file" -ForegroundColor Green
             $successCount++

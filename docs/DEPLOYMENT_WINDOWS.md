@@ -68,7 +68,7 @@ dotnet publish -c Release -o ./publish
 #### 服务器（管理员权限）
 ```powershell
 # 运行部署脚本
-.\deploy-to-iis.ps1 -FirstInstall
+.\scripts\deploy-to-iis.ps1 -FirstInstall
 
 # 编辑生产配置
 notepad F:\IIS\LogisticsProductionNet8\appsettings.Production.json
@@ -87,10 +87,10 @@ dotnet publish -c Release -o ./publish
 #### 服务器
 ```powershell
 # 标准更新（停机 5-10 秒）
-.\deploy-to-iis.ps1
+.\scripts\deploy-to-iis.ps1
 
 # 热更新（停机 2-5 秒）
-.\deploy-to-iis.ps1 -HotUpdate
+.\scripts\deploy-to-iis.ps1 -HotUpdate
 ```
 
 ### IIS 管理命令
@@ -142,7 +142,7 @@ Expand-Archive -Path LogisticsProduction_v1.0.0.zip -DestinationPath D:\Deploy\L
 cd D:\Deploy\LogisticsProduction
 
 # 3. 运行部署脚本（首次安装）
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 
 # 脚本会自动：
 # - 创建部署目录（F:\LogisticsProductionNet8）
@@ -186,7 +186,7 @@ Expand-Archive -Path LogisticsProduction_v1.0.5.zip -DestinationPath D:\Deploy\L
 cd D:\Deploy\LogisticsProduction_v1.0.5
 
 # 3. 运行更新（不带 -FirstInstall 参数）
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 
 # 脚本会自动：
 # - 停止服务
@@ -544,7 +544,7 @@ dotnet run --urls "http://0.0.0.0:8080"
 #### 首次安装时指定端口
 ```powershell
 # 修改 deploy-to-iis.ps1 中的端口参数
-.\deploy-to-iis.ps1 -FirstInstall -Port 9000
+.\scripts\deploy-to-iis.ps1 -FirstInstall -Port 9000
 ```
 
 #### 修改已部署的端口
@@ -706,16 +706,16 @@ Invoke-WebRequest -Uri "http://localhost:8008/health" -UseBasicParsing
 ### 部署
 ```powershell
 # IIS 首次部署
-.\deploy-to-iis.ps1 -FirstInstall
+.\scripts\deploy-to-iis.ps1 -FirstInstall
 
 # IIS 更新
-.\deploy-to-iis.ps1
+.\scripts\deploy-to-iis.ps1
 
 # IIS 热更新
-.\deploy-to-iis.ps1 -HotUpdate
+.\scripts\deploy-to-iis.ps1 -HotUpdate
 
 # Windows 服务部署
-.\deploy.ps1 -Environment Production
+.\scripts\deploy.ps1 -Environment Production
 ```
 
 ### 管理

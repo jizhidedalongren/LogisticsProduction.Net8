@@ -1,0 +1,11 @@
+# Editor temp files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+~$*
+
+# OS metadata
+Thumbs.db
+.DS_Store

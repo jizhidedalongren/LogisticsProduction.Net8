@@ -87,7 +87,7 @@ docs/entity-generator/
 
 - [主文档](README.md) - 完整指南
 - [项目 README](../../README.md) - 项目主页
-- [文档索引](../../DOCS_INDEX.md) - 所有文档导航
+- [文档索引](../DOCS_INDEX.md) - 所有文档导航
 
 ## 🎉 总结
 

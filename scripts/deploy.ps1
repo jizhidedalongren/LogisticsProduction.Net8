@@ -1,5 +1,5 @@
 ﻿# 物流生产 API 部署脚本 (.NET 8)
-# 用法: .\deploy.ps1 -Environment "Production" -Version "1.0.0"
+# 用法: .\scripts\deploy.ps1 -Environment "Production" -Version "1.0.0"
 
 param(
     [Parameter(Mandatory=$false)]
