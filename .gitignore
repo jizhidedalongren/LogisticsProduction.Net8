@@ -1,0 +1,23 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Logs
+Logs/
+*.log
+
+## Sensitive configuration
+appsettings.*.json
+!appsettings.Development.json
+!appsettings.Production.json
+secrets.json
+
+## Generated files (Entity Generator)
+Generated/
+
+## Production sensitive files
+appsettings.Production.json
+web.config

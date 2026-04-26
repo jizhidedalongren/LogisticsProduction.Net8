@@ -1,0 +1,342 @@
+﻿# 数据库配置安全指南
+
+本文档说明如何安全地配置数据库连接字符串，避免将敏感信息提交到版本控制系统。
+
+## 📋 目录
+
+- [配置方案概述](#配置方案概述)
+- [开发环境配置](#开发环境配置)
+- [生产环境配置](#生产环境配置)
+- [配置优先级](#配置优先级)
+- [常见问题](#常见问题)
+
+---
+
+## 配置方案概述
+
+项目采用分层配置策略：
+
+| 环境 | 配置方式 | 安全性 | 适用场景 |
+|------|---------|--------|---------|
+| 开发环境 | User Secrets | ⭐⭐⭐⭐ | 本地开发 |
+| 生产环境 | 环境变量 | ⭐⭐⭐⭐⭐ | 服务器部署 |
+| 测试环境 | appsettings.{Environment}.json | ⭐⭐⭐ | 临时测试 |
+
+---
+
+## 开发环境配置
+
+### 方法 1：使用 User Secrets（推荐）
+
+User Secrets 将敏感信息存储在用户配置文件中，不会提交到 Git。
+
+#### 步骤 1：初始化 User Secrets
+
+在项目根目录执行：
+
+```bash
+dotnet user-secrets init
+```
+
+#### 步骤 2：设置连接字符串
+
+```bash
+# 设置 91Db 连接字符串
+dotnet user-secrets set "ConnectionStrings:91Db" "Data Source=192.168.2.91;Initial Catalog=cwbase0006;User ID=LC00069999;Password=你的密码;Encrypt=True;TrustServerCertificate=True;"
+
+# 设置 MainDb 连接字符串
+dotnet user-secrets set "ConnectionStrings:MainDb" "Data Source=.;Initial Catalog=LogisticsProduction_DB;Integrated Security=True;TrustServerCertificate=True"
+```
+
+#### 步骤 3：验证配置
+
+```bash
+# 查看所有 secrets
+dotnet user-secrets list
+
+# 查看特定配置
+dotnet user-secrets list | grep ConnectionStrings
+```
+
+#### 步骤 4：运行项目
+
+```bash
+dotnet run
+```
+
+User Secrets 会自动加载，无需修改代码。
+
+---
+
+### 方法 2：使用 appsettings.Development.json
+
+如果团队成员需要共享开发配置，可以使用此方法。
+
+**注意**：`appsettings.Development.json` 已包含在 `.gitignore` 的例外列表中，会被提交到 Git。请确保不包含真实密码。
+
+编辑 `appsettings.Development.json`：
+
+```json
+{
+  "ConnectionStrings": {
+    "91Db": "Data Source=192.168.2.91;Initial Catalog=cwbase0006;User ID=LC00069999;Password=开发环境密码;Encrypt=True;TrustServerCertificate=True;",
+    "MainDb": "Data Source=.;Initial Catalog=LogisticsProduction_DB;Integrated Security=True;TrustServerCertificate=True"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "Microsoft.AspNetCore": "Information"
+    }
+  }
+}
+```
+
+---
+
+## 生产环境配置
+
+### 方法 1：环境变量（推荐）
+
+#### Windows Server / IIS
+
+**选项 A：系统环境变量**
+
+1. 打开"系统属性" → "高级" → "环境变量"
+2. 在"系统变量"中添加：
+
+```
+变量名: ConnectionStrings__91Db
+变量值: Data Source=192.168.2.91;Initial Catalog=cwbase0006;User ID=LC00069999;Password=生产密码;Encrypt=True;TrustServerCertificate=True;
+
+变量名: ConnectionStrings__MainDb
+变量值: Data Source=生产服务器;Initial Catalog=LogisticsProduction_DB;User ID=生产用户;Password=生产密码;Encrypt=True;TrustServerCertificate=True;
+```
+
+**注意**：使用双下划线 `__` 表示配置层级。
+
+3. 重启 IIS 或应用程序池
+
+```powershell
+iisreset
+# 或
+Restart-WebAppPool -Name "你的应用程序池名称"
+```
+
+**选项 B：IIS 应用程序设置**
+
+1. 打开 IIS 管理器
+2. 选择你的网站 → "配置编辑器"
+3. 节：`system.webServer/aspNetCore`
+4. 添加环境变量到 `environmentVariables` 集合
+
+**选项 C：web.config**
+
+编辑 `web.config`（发布后生成）：
+
+```xml
+<configuration>
+  <system.webServer>
+    <aspNetCore processPath="dotnet" arguments=".\LogisticsProduction.Net8.dll">
+      <environmentVariables>
+        <environmentVariable name="ConnectionStrings__91Db" value="Data Source=192.168.2.91;..." />
+        <environmentVariable name="ConnectionStrings__MainDb" value="Data Source=...;" />
+      </environmentVariables>
+    </aspNetCore>
+  </system.webServer>
+</configuration>
+```
+
+**重要**：将 `web.config` 添加到 `.gitignore`。
+
+---
+
+#### Windows Service
+
+如果作为 Windows 服务运行，在服务安装脚本中设置环境变量：
+
+```powershell
+# 创建服务时设置环境变量
+sc.exe create "LogisticsProductionService" binPath="C:\path\to\LogisticsProduction.Net8.exe" 
+
+# 设置环境变量（需要修改注册表）
+$serviceName = "LogisticsProductionService"
+$regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\$serviceName"
+Set-ItemProperty -Path $regPath -Name "Environment" -Value @(
+    "ConnectionStrings__91Db=Data Source=192.168.2.91;...",
+    "ConnectionStrings__MainDb=Data Source=...;"
+)
+```
+
+---
+
+#### Docker / 容器化部署
+
+在 `docker-compose.yml` 或运行命令中设置：
+
+```yaml
+version: '3.8'
+services:
+  logistics-api:
+    image: logistics-production:latest
+    environment:
+      - ConnectionStrings__91Db=Data Source=192.168.2.91;...
+      - ConnectionStrings__MainDb=Data Source=...;
+      - ASPNETCORE_ENVIRONMENT=Production
+```
+
+或使用 `.env` 文件（不提交到 Git）：
+
+```bash
+docker run -d \
+  --env-file .env.production \
+  logistics-production:latest
+```
+
+---
+
+### 方法 2：appsettings.Production.json（不推荐）
+
+如果必须使用配置文件：
+
+1. 创建 `appsettings.Production.json`（已在服务器上）
+2. 填入生产连接字符串
+3. **确保此文件不提交到 Git**（已在 `.gitignore` 中配置）
+
+```json
+{
+  "ConnectionStrings": {
+    "91Db": "Data Source=192.168.2.91;Initial Catalog=cwbase0006;User ID=LC00069999;Password=生产密码;Encrypt=True;TrustServerCertificate=True;",
+    "MainDb": "Data Source=生产服务器;Initial Catalog=LogisticsProduction_DB;User ID=生产用户;Password=生产密码;Encrypt=True;TrustServerCertificate=True;"
+  }
+}
+```
+
+---
+
+## 配置优先级
+
+.NET 配置系统按以下顺序加载（后者覆盖前者）：
+
+1. `appsettings.json`
+2. `appsettings.{Environment}.json`
+3. User Secrets（仅开发环境）
+4. 环境变量
+5. 命令行参数
+
+**示例**：如果同时设置了 `appsettings.json` 和环境变量，环境变量的值会生效。
+
+---
+
+## 常见问题
+
+### Q1：如何验证配置是否生效？
+
+在 `Program.cs` 或 `Startup.cs` 中添加日志：
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// 验证连接字符串（不要记录完整字符串！）
+var connStr = builder.Configuration.GetConnectionString("91Db");
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+});
+
+var app = builder.Build();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("91Db 连接字符串已配置: {IsConfigured}", !string.IsNullOrEmpty(connStr));
+```
+
+### Q2：User Secrets 存储在哪里？
+
+Windows: `%APPDATA%\Microsoft\UserSecrets\<user_secrets_id>\secrets.json`
+
+查看路径：
+
+```bash
+dotnet user-secrets list --verbose
+```
+
+### Q3：如何在团队中共享开发配置？
+
+**不推荐**共享真实密码。建议：
+
+1. 每个开发者使用自己的 User Secrets
+2. 在文档中提供配置模板
+3. 使用测试数据库，密码可以简单一些
+
+### Q4：环境变量中的双下划线是什么？
+
+.NET 使用 `__` 表示配置层级：
+
+```
+ConnectionStrings__91Db  →  ConnectionStrings:91Db
+ExternalServices__PrintServiceUrl  →  ExternalServices:PrintServiceUrl
+```
+
+### Q5：如何在代码中读取配置？
+
+```csharp
+// 方法 1：通过 IConfiguration
+public class MyService
+{
+    private readonly string _connectionString;
+    
+    public MyService(IConfiguration configuration)
+    {
+        _connectionString = configuration.GetConnectionString("91Db");
+    }
+}
+
+// 方法 2：通过 Options 模式
+public class DatabaseOptions
+{
+    public string ConnectionString91Db { get; set; }
+}
+
+// Startup.cs
+services.Configure<DatabaseOptions>(configuration.GetSection("ConnectionStrings"));
+```
+
+### Q6：部署时忘记设置环境变量怎么办？
+
+应用程序会使用 `appsettings.json` 中的空字符串，导致数据库连接失败。建议：
+
+1. 在 `Program.cs` 中添加启动验证：
+
+```csharp
+var connStr = builder.Configuration.GetConnectionString("91Db");
+if (string.IsNullOrEmpty(connStr))
+{
+    throw new InvalidOperationException("数据库连接字符串未配置！请设置环境变量 ConnectionStrings__91Db");
+}
+```
+
+2. 在部署文档中明确列出必需的环境变量
+
+---
+
+## 安全检查清单
+
+部署前请确认：
+
+- [ ] `appsettings.json` 中不包含真实密码
+- [ ] 生产环境使用环境变量或安全的配置管理
+- [ ] `appsettings.Production.json`（如果存在）已添加到 `.gitignore`
+- [ ] `web.config`（如果包含敏感信息）已添加到 `.gitignore`
+- [ ] 数据库用户使用最小权限原则
+- [ ] 生产密码定期轮换
+- [ ] 连接字符串使用加密传输（`Encrypt=True`）
+
+---
+
+## 相关文档
+
+- [.NET Configuration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/)
+- [Safe storage of app secrets in development](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)
+- [部署指南](../DEPLOYMENT_WINDOWS.md)
+
+---
+
+**最后更新**: 2026-03-28

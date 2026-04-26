@@ -1,0 +1,484 @@
+# 🔌 端口配置完整指南
+
+## 📋 端口配置优先级
+
+ASP.NET Core 应用的端口配置按以下优先级生效（从高到低）：
+
+1. **launchSettings.json** - IDE 调试时使用
+2. **命令行参数** - `--urls` 参数
+3. **环境变量** - `ASPNETCORE_URLS`
+4. **appsettings.json** - Kestrel 配置
+5. **代码配置** - Program.cs 中的 UseUrls()
+6. **默认值** - http://localhost:5000
+
+---
+
+## 🖥️ 本地开发环境
+
+### 方式一：launchSettings.json（推荐）
+
+**适用场景：** Visual Studio、VS Code、Rider 调试
+
+**文件位置：** `Properties/launchSettings.json`
+
+```json
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:8080",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "https": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:8443;http://localhost:8080",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:8080",
+      "sslPort": 8443
+    }
+  }
+}
+```
+
+**使用方法：**
+- Visual Studio：调试工具栏选择 profile（http / https / IIS Express）
+- VS Code：在 `.vscode/launch.json` 中引用
+- Rider：运行配置中选择 profile
+
+**优点：**
+- IDE 集成，无需手动输入命令
+- 支持多个配置文件（profile）
+- 可以配置环境变量、启动浏览器等
+
+### 方式二：命令行参数
+
+**适用场景：** 命令行调试、临时修改端口
+
+```bash
+# HTTP 单端口
+dotnet run --urls "http://localhost:8080"
+
+# HTTPS + HTTP 双端口
+dotnet run --urls "https://localhost:8443;http://localhost:8080"
+
+# 监听所有网卡（允许局域网访问）
+dotnet run --urls "http://0.0.0.0:8080"
+
+# 监听特定 IP
+dotnet run --urls "http://192.168.1.100:8080"
+
+# 多个地址
+dotnet run --urls "http://localhost:8080;http://192.168.1.100:8080"
+```
+
+**优点：**
+- 快速临时修改
+- 不需要修改配置文件
+- 适合脚本自动化
+
+### 方式三：环境变量
+
+**适用场景：** 持久化配置、容器部署
+
+```powershell
+# PowerShell（临时）
+$env:ASPNETCORE_URLS="http://localhost:8080"
+dotnet run
+
+# PowerShell（永久 - 用户级）
+[System.Environment]::SetEnvironmentVariable("ASPNETCORE_URLS", "http://localhost:8080", "User")
+
+# PowerShell（永久 - 系统级，需管理员）
+[System.Environment]::SetEnvironmentVariable("ASPNETCORE_URLS", "http://localhost:8080", "Machine")
+
+# CMD（临时）
+set ASPNETCORE_URLS=http://localhost:8080
+dotnet run
+
+# Linux / macOS
+export ASPNETCORE_URLS="http://localhost:8080"
+dotnet run
+```
+
+**优点：**
+- 不修改代码和配置文件
+- 适合容器化部署
+- 可以在不同环境使用不同端口
+
+### 方式四：appsettings.json
+
+**适用场景：** 应用级默认配置
+
+**文件位置：** `appsettings.Development.json` 或 `appsettings.json`
+
+```json
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://localhost:8080"
+      },
+      "Https": {
+        "Url": "https://localhost:8443",
+        "Certificate": {
+          "Path": "certificate.pfx",
+          "Password": "密码"
+        }
+      }
+    }
+  }
+}
+```
+
+**高级配置：**
+
+```json
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://0.0.0.0:8080"
+      },
+      "Https": {
+        "Url": "https://0.0.0.0:8443",
+        "Certificate": {
+          "Path": "certificate.pfx",
+          "Password": "密码"
+        }
+      }
+    },
+    "Limits": {
+      "MaxConcurrentConnections": 100,
+      "MaxRequestBodySize": 10485760,
+      "KeepAliveTimeout": "00:02:00"
+    }
+  }
+}
+```
+
+**优点：**
+- 应用级配置
+- 支持高级 Kestrel 配置
+- 可以按环境区分（Development / Production）
+
+### 方式五：代码配置
+
+**适用场景：** 动态端口、复杂逻辑
+
+**文件位置：** `Program.cs`
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+
+// 方式一：UseUrls
+builder.WebHost.UseUrls("http://localhost:8080", "https://localhost:8443");
+
+// 方式二：ConfigureKestrel
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(8080);
+    options.ListenLocalhost(8443, listenOptions =>
+    {
+        listenOptions.UseHttps("certificate.pfx", "密码");
+    });
+});
+
+// 方式三：动态端口
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+var app = builder.Build();
+app.Run();
+```
+
+**优点：**
+- 最灵活
+- 可以实现复杂逻辑
+- 动态配置
+
+---
+
+## 🚀 生产环境
+
+### IIS 部署
+
+#### 首次安装时指定端口
+
+```powershell
+# 使用部署脚本
+.\deploy-to-iis.ps1 -FirstInstall -Port 9000
+
+# 或手动创建
+New-Website -Name "LogisticsProduction.API" `
+    -PhysicalPath "F:\IIS\LogisticsProductionNet8" `
+    -ApplicationPool "LogisticsProductionNet8" `
+    -Port 9000
+```
+
+#### 修改已部署的端口
+
+```powershell
+# 方式一：PowerShell
+Import-Module WebAdministration
+Set-WebBinding -Name "LogisticsProduction.API" `
+    -BindingInformation "*:8008:*" `
+    -PropertyName Port `
+    -Value 9000
+
+# 方式二：IIS 管理器
+# 1. 打开 IIS 管理器（Win + R → inetmgr）
+# 2. 选择网站 → 右键 → 编辑绑定
+# 3. 选择绑定 → 编辑 → 修改端口号 → 确定
+
+# 重启应用程序池
+Restart-WebAppPool -Name "LogisticsProductionNet8"
+```
+
+#### 添加多个端口
+
+```powershell
+# 添加 HTTPS 绑定
+New-WebBinding -Name "LogisticsProduction.API" -Protocol "https" -Port 8443
+
+# 添加额外的 HTTP 端口
+New-WebBinding -Name "LogisticsProduction.API" -Protocol "http" -Port 9000
+
+# 查看所有绑定
+Get-WebBinding -Name "LogisticsProduction.API"
+```
+
+### Windows 服务部署
+
+#### 修改配置文件
+
+编辑 `F:\LogisticsProductionNet8\appsettings.Production.json`：
+
+```json
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://0.0.0.0:9000"
+      }
+    }
+  }
+}
+```
+
+重启服务：
+```powershell
+Restart-Service -Name "LogisticsProductionNet8"
+```
+
+#### 修改服务环境变量
+
+```powershell
+# 停止服务
+Stop-Service -Name "LogisticsProductionNet8"
+
+# 修改注册表
+$servicePath = "HKLM:\SYSTEM\CurrentControlSet\Services\LogisticsProductionNet8"
+$envVars = @(
+    "ASPNETCORE_ENVIRONMENT=Production",
+    "ASPNETCORE_URLS=http://0.0.0.0:9000"
+)
+Set-ItemProperty -Path $servicePath -Name "Environment" -Value $envVars
+
+# 启动服务
+Start-Service -Name "LogisticsProductionNet8"
+```
+
+### Docker 部署
+
+```dockerfile
+# Dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY . .
+
+# 使用环境变量配置端口
+ENV ASPNETCORE_URLS=http://+:80
+
+EXPOSE 80
+ENTRYPOINT ["dotnet", "LogisticsProduction.Net8.dll"]
+```
+
+```bash
+# 运行容器，映射端口
+docker run -d -p 8080:80 --name logistics-api logistics-production-api:latest
+
+# 或使用环境变量
+docker run -d -p 8080:8080 -e ASPNETCORE_URLS="http://+:8080" logistics-production-api:latest
+```
+
+---
+
+## 🔥 防火墙配置
+
+### Windows 防火墙
+
+```powershell
+# 允许端口访问
+New-NetFirewallRule -DisplayName "Logistics API HTTP" `
+    -Direction Inbound `
+    -LocalPort 8080 `
+    -Protocol TCP `
+    -Action Allow
+
+# 允许端口范围
+New-NetFirewallRule -DisplayName "Logistics API Range" `
+    -Direction Inbound `
+    -LocalPort 8080-8090 `
+    -Protocol TCP `
+    -Action Allow
+
+# 删除规则
+Remove-NetFirewallRule -DisplayName "Logistics API HTTP"
+
+# 查看规则
+Get-NetFirewallRule -DisplayName "Logistics API*"
+```
+
+### 云服务器安全组
+
+如果部署在云服务器（阿里云、腾讯云、AWS 等），需要在安全组中开放端口：
+
+1. 登录云服务器控制台
+2. 找到安全组配置
+3. 添加入站规则：
+   - 协议：TCP
+   - 端口：8080（或自定义端口）
+   - 源地址：0.0.0.0/0（或指定 IP）
+
+---
+
+## 🐛 故障排查
+
+### 检查端口占用
+
+```powershell
+# 查看端口占用
+netstat -ano | findstr :8080
+
+# 查看占用进程
+Get-Process -Id <PID>
+
+# 查看进程详细信息
+Get-Process -Id <PID> | Select-Object *
+
+# 停止占用进程
+Stop-Process -Id <PID> -Force
+```
+
+### 测试端口连通性
+
+```powershell
+# 测试本地端口
+Test-NetConnection -ComputerName localhost -Port 8080
+
+# 测试远程端口
+Test-NetConnection -ComputerName 192.168.1.100 -Port 8080
+
+# 使用 telnet（需要启用 telnet 客户端）
+telnet localhost 8080
+```
+
+### 查看应用监听的端口
+
+```powershell
+# 查看所有监听端口
+netstat -ano | findstr LISTENING
+
+# 查看特定进程监听的端口
+netstat -ano | findstr <PID>
+
+# 使用 PowerShell
+Get-NetTCPConnection -State Listen | Select-Object LocalAddress, LocalPort, OwningProcess
+```
+
+### 常见错误
+
+#### 端口已被占用
+```
+System.IO.IOException: Failed to bind to address http://127.0.0.1:8080: address already in use.
+```
+
+**解决方法：**
+1. 查找占用进程：`netstat -ano | findstr :8080`
+2. 停止进程或更换端口
+
+#### 权限不足
+```
+System.Net.Sockets.SocketException: An attempt was made to access a socket in a way forbidden by its access permissions
+```
+
+**解决方法：**
+1. 以管理员身份运行
+2. 使用大于 1024 的端口（非特权端口）
+
+#### 防火墙阻止
+```
+无法访问 http://localhost:8080
+```
+
+**解决方法：**
+1. 检查防火墙规则
+2. 临时关闭防火墙测试
+3. 添加防火墙例外
+
+---
+
+## 📝 最佳实践
+
+### 开发环境
+- 使用 **launchSettings.json** 配置端口
+- HTTP 端口：5000-5999
+- HTTPS 端口：5001（配合 HTTP 5000）
+- 避免使用 80、443 等特权端口
+
+### 生产环境
+- IIS：使用标准端口 80（HTTP）、443（HTTPS）
+- Windows 服务：使用 8000-9000 范围
+- 使用反向代理（Nginx、IIS）处理 SSL
+- 配置防火墙规则
+
+### 端口选择建议
+- **80** - HTTP 标准端口（需管理员权限）
+- **443** - HTTPS 标准端口（需管理员权限）
+- **5000-5999** - 开发环境推荐
+- **8000-8999** - 生产环境推荐
+- **避免** - 3000（Node.js）、3306（MySQL）、5432（PostgreSQL）等常用端口
+
+---
+
+## 🔗 相关文档
+
+- [README.md](README.md) - 项目概览
+- [DEPLOYMENT_WINDOWS.md](DEPLOYMENT_WINDOWS.md) - 部署指南
+- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - 快速参考
+- [ASP.NET Core Kestrel 配置](https://learn.microsoft.com/aspnet/core/fundamentals/servers/kestrel)

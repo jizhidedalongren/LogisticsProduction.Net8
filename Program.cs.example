@@ -1,0 +1,113 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using LogisticsProduction.Net8.CrossCutting.Middleware;
+using LogisticsProduction.Net8.Infrastructure;
+using LogisticsProduction.Net8.Tools;  // ← 添加这一行以使用实体生成器
+using NLog;
+using NLog.Web;
+
+var logger = LogManager.Setup().LoadConfigurationFromFile("nlog.config").GetCurrentClassLogger();
+
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Windows 服务支持
+    builder.Host.UseWindowsService();
+
+    // NLog 集成
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
+
+    // Autofac 集成
+    builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+    builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
+    {
+        containerBuilder.RegisterModule<InfrastructureModule>();
+    });
+
+    // 添加服务
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
+
+    // 添加 HttpClient
+    builder.Services.AddHttpClient();
+
+    var app = builder.Build();
+
+    // ========== SqlSugar 实体类生成器（仅开发环境） ==========
+    // 使用说明：
+    // 1. 确保 appsettings.json 中配置了 ConnectionStrings:MainDb
+    // 2. 取消注释下面的生成方法
+    // 3. 运行项目 (dotnet run)
+    // 4. 生成完成后，重新注释掉生成代码
+    // 5. 生成的文件位于: Domain/Entities/
+    if (app.Environment.IsDevelopment())
+    {
+        var connectionString = builder.Configuration.GetConnectionString("MainDb");
+        if (!string.IsNullOrEmpty(connectionString))
+        {
+            try
+            {
+                var generator = new EntityGenerator(connectionString, "Domain/Entities");
+                
+                // ========== 选择以下一种方式，取消注释即可使用 ==========
+                
+                // 方式1: 生成所有表（首次使用推荐）
+                // generator.GenerateAllEntities();
+                
+                // 方式2: 生成指定表（标准方式）
+                // generator.GenerateEntity("Product");
+                
+                // 方式3: 生成指定表（继承 BaseEntity，推荐）
+                // 适用于包含 CreateTime、UpdateTime、CreateUser、UpdateUser 字段的表
+                // generator.GenerateEntityWithBase("Product");
+                
+                // 方式4: 批量生成多个表
+                // var tables = new[] { "Product", "Order", "Customer" };
+                // foreach (var table in tables)
+                // {
+                //     generator.GenerateEntityWithBase(table);
+                // }
+                
+                logger.Info("✓ 实体生成器已就绪");
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "✗ 实体生成器初始化失败");
+            }
+        }
+        else
+        {
+            logger.Warn("⚠ 未配置数据库连接字符串 MainDb，请在 appsettings.json 中配置");
+        }
+    }
+    // ========== 实体类生成器结束 ==========
+
+    // 配置中间件管道
+    // Swagger 在所有环境下启用（便于生产环境调试和文档查看）
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    // 全局异常处理中间件
+    app.UseMiddleware<GlobalExceptionMiddleware>();
+
+    // 认证中间件
+    app.UseMiddleware<AuthenticationMiddleware>();
+
+    app.UseHttpsRedirection();
+    app.UseAuthorization();
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    logger.Error(ex, "应用启动失败");
+    throw;
+}
+finally
+{
+    LogManager.Shutdown();
+}

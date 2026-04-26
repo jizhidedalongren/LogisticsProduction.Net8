@@ -1,0 +1,857 @@
+# 开发指南 - 新功能实现流程
+
+本指南以"获取物流线容器信息"功能为例，演示完整的开发流程。
+
+---
+
+## 功能开发流程（由内向外）
+
+```
+步骤 1: Domain 层（领域层）
+  ├─ 定义实体类
+  └─ 定义仓储接口
+
+步骤 2: Infrastructure 层（基础设施层）
+  └─ 实现仓储类
+
+步骤 3: Application 层（应用服务层）
+  ├─ 定义 DTO
+  ├─ 定义服务接口
+  └─ 实现服务类
+
+步骤 4: Controllers 层（控制器层）
+  └─ 创建控制器
+
+步骤 5: DI 注册
+  └─ 在 InfrastructureModule 中注册
+
+步骤 6: 配置日志（可选）
+  └─ 配置业务专用日志
+```
+
+---
+
+## 示例：获取物流线容器信息
+
+### 步骤 1：Domain 层 - 定义实体
+
+**文件位置：** `Domain/Entities/LogisticsContainer.cs`
+
+```csharp
+namespace LogisticsProduction.Net8.Domain.Entities;
+
+/// <summary>
+/// 物流线容器实体
+/// </summary>
+public class LogisticsContainer : BaseEntity
+{
+    /// <summary>
+    /// 容器编码（主键）
+    /// </summary>
+    public string ContainerCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 容器名称
+    /// </summary>
+    public string ContainerName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 物流线编码
+    /// </summary>
+    public string LogisticsLineCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 容器类型（托盘、周转箱等）
+    /// </summary>
+    public string ContainerType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 当前状态（空闲、使用中、维护中）
+    /// </summary>
+    public string Status { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 当前位置
+    /// </summary>
+    public string? CurrentLocation { get; set; }
+
+    /// <summary>
+    /// 容量
+    /// </summary>
+    public decimal Capacity { get; set; }
+
+    /// <summary>
+    /// 是否启用
+    /// </summary>
+    public bool IsEnabled { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Remark { get; set; }
+}
+```
+
+**说明：**
+- 继承 `BaseEntity`（包含 CreateTime、UpdateTime）
+- 使用 nullable 引用类型（`string?`）表示可选字段
+- 属性使用 PascalCase 命名
+
+---
+
+### 步骤 2：Domain 层 - 定义仓储接口
+
+**文件位置：** `Domain/Interfaces/ILogisticsContainerRepository.cs`
+
+```csharp
+using LogisticsProduction.Net8.Domain.Entities;
+
+namespace LogisticsProduction.Net8.Domain.Interfaces;
+
+/// <summary>
+/// 物流线容器仓储接口
+/// </summary>
+public interface ILogisticsContainerRepository : IRepository<LogisticsContainer>
+{
+    /// <summary>
+    /// 根据物流线编码获取容器列表
+    /// </summary>
+    Task<List<LogisticsContainer>> GetByLogisticsLineAsync(string logisticsLineCode);
+
+    /// <summary>
+    /// 根据容器编码获取容器信息
+    /// </summary>
+    Task<LogisticsContainer?> GetByContainerCodeAsync(string containerCode);
+
+    /// <summary>
+    /// 获取指定状态的容器列表
+    /// </summary>
+    Task<List<LogisticsContainer>> GetByStatusAsync(string status);
+}
+```
+
+**说明：**
+- 继承 `IRepository<T>` 获得基础 CRUD 能力
+- 定义业务特定的查询方法
+- 所有方法都是异步的（Async 后缀）
+
+---
+
+### 步骤 3：Infrastructure 层 - 实现仓储
+
+**文件位置：** `Infrastructure/Persistence/LogisticsContainerRepository.cs`
+
+```csharp
+using LogisticsProduction.Net8.Domain.Entities;
+using LogisticsProduction.Net8.Domain.Interfaces;
+
+namespace LogisticsProduction.Net8.Infrastructure.Persistence;
+
+/// <summary>
+/// 物流线容器仓储实现
+/// </summary>
+public class LogisticsContainerRepository : BaseRepository<LogisticsContainer>, ILogisticsContainerRepository
+{
+    public LogisticsContainerRepository(DbContextFactory dbFactory) : base(dbFactory)
+    {
+    }
+
+    public async Task<List<LogisticsContainer>> GetByLogisticsLineAsync(string logisticsLineCode)
+    {
+        return await Db.Queryable<LogisticsContainer>()
+            .Where(c => c.LogisticsLineCode == logisticsLineCode && c.IsEnabled)
+            .OrderBy(c => c.ContainerCode)
+            .ToListAsync();
+    }
+
+    public async Task<LogisticsContainer?> GetByContainerCodeAsync(string containerCode)
+    {
+        return await Db.Queryable<LogisticsContainer>()
+            .Where(c => c.ContainerCode == containerCode)
+            .FirstAsync();
+    }
+
+    public async Task<List<LogisticsContainer>> GetByStatusAsync(string status)
+    {
+        return await Db.Queryable<LogisticsContainer>()
+            .Where(c => c.Status == status && c.IsEnabled)
+            .ToListAsync();
+    }
+}
+```
+
+**说明：**
+- 继承 `BaseRepository<T>` 获得基础能力
+- 实现接口定义的业务方法
+- 使用 SqlSugar 的 Lambda 表达式（参数化查询，防 SQL 注入）
+- 所有数据库操作都是异步的
+
+---
+
+### 步骤 4：Application 层 - 定义 DTO
+
+**文件位置：** `Application/Dtos/LogisticsContainerDto.cs`
+
+```csharp
+namespace LogisticsProduction.Net8.Application.Dtos;
+
+/// <summary>
+/// 物流线容器 DTO
+/// </summary>
+public class LogisticsContainerDto
+{
+    public string ContainerCode { get; set; } = string.Empty;
+    public string ContainerName { get; set; } = string.Empty;
+    public string LogisticsLineCode { get; set; } = string.Empty;
+    public string ContainerType { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? CurrentLocation { get; set; }
+    public decimal Capacity { get; set; }
+    public DateTime CreateTime { get; set; }
+}
+
+/// <summary>
+/// 容器查询请求
+/// </summary>
+public class ContainerQueryRequest
+{
+    public string? LogisticsLineCode { get; set; }
+    public string? Status { get; set; }
+    public string? Keyword { get; set; }
+}
+```
+
+**说明：**
+- DTO 用于数据传输，不包含业务逻辑
+- 可以与实体字段不完全一致（按需暴露）
+- 用于 API 请求和响应
+
+---
+
+### 步骤 5：Application 层 - 定义服务接口
+
+**文件位置：** `Application/Queries/LogisticsContainer/ILogisticsContainerQueryService.cs`
+
+```csharp
+using LogisticsProduction.Net8.Application.Dtos;
+
+namespace LogisticsProduction.Net8.Application.Queries.LogisticsContainer;
+
+/// <summary>
+/// 物流线容器查询服务接口
+/// </summary>
+public interface ILogisticsContainerQueryService
+{
+    /// <summary>
+    /// 获取容器列表
+    /// </summary>
+    Task<List<LogisticsContainerDto>> GetContainerListAsync(ContainerQueryRequest request);
+
+    /// <summary>
+    /// 获取容器详情
+    /// </summary>
+    Task<LogisticsContainerDto?> GetContainerDetailAsync(string containerCode);
+
+    /// <summary>
+    /// 根据物流线获取容器
+    /// </summary>
+    Task<List<LogisticsContainerDto>> GetContainersByLineAsync(string logisticsLineCode);
+}
+```
+
+---
+
+### 步骤 6：Application 层 - 实现服务
+
+**文件位置：** `Application/Queries/LogisticsContainer/LogisticsContainerQueryService.cs`
+
+```csharp
+using LogisticsProduction.Net8.Application.Dtos;
+using LogisticsProduction.Net8.Domain.Interfaces;
+
+namespace LogisticsProduction.Net8.Application.Queries.LogisticsContainer;
+
+/// <summary>
+/// 物流线容器查询服务实现
+/// </summary>
+public class LogisticsContainerQueryService : ILogisticsContainerQueryService
+{
+    private readonly ILogisticsContainerRepository _repository;
+    private readonly ILogger<LogisticsContainerQueryService> _logger;
+
+    public LogisticsContainerQueryService(
+        ILogisticsContainerRepository repository,
+        ILogger<LogisticsContainerQueryService> logger)
+    {
+        _repository = repository;
+        _logger = logger;
+    }
+
+    public async Task<List<LogisticsContainerDto>> GetContainerListAsync(ContainerQueryRequest request)
+    {
+        _logger.LogInformation("查询容器列表，参数: {@Request}", request);
+
+        List<Domain.Entities.LogisticsContainer> containers;
+
+        if (!string.IsNullOrEmpty(request.LogisticsLineCode))
+        {
+            containers = await _repository.GetByLogisticsLineAsync(request.LogisticsLineCode);
+        }
+        else if (!string.IsNullOrEmpty(request.Status))
+        {
+            containers = await _repository.GetByStatusAsync(request.Status);
+        }
+        else
+        {
+            containers = await _repository.GetListAsync(c => c.IsEnabled);
+        }
+
+        // 关键字过滤
+        if (!string.IsNullOrEmpty(request.Keyword))
+        {
+            containers = containers.Where(c => 
+                c.ContainerCode.Contains(request.Keyword) || 
+                c.ContainerName.Contains(request.Keyword)
+            ).ToList();
+        }
+
+        _logger.LogInformation("查询到 {Count} 条容器记录", containers.Count);
+
+        return containers.Select(MapToDto).ToList();
+    }
+
+    public async Task<LogisticsContainerDto?> GetContainerDetailAsync(string containerCode)
+    {
+        _logger.LogInformation("查询容器详情，容器编码: {ContainerCode}", containerCode);
+
+        var container = await _repository.GetByContainerCodeAsync(containerCode);
+        
+        if (container == null)
+        {
+            _logger.LogWarning("容器不存在: {ContainerCode}", containerCode);
+            return null;
+        }
+
+        return MapToDto(container);
+    }
+
+    public async Task<List<LogisticsContainerDto>> GetContainersByLineAsync(string logisticsLineCode)
+    {
+        _logger.LogInformation("查询物流线容器，物流线编码: {LineCode}", logisticsLineCode);
+
+        var containers = await _repository.GetByLogisticsLineAsync(logisticsLineCode);
+        
+        _logger.LogInformation("物流线 {LineCode} 有 {Count} 个容器", logisticsLineCode, containers.Count);
+
+        return containers.Select(MapToDto).ToList();
+    }
+
+    private static LogisticsContainerDto MapToDto(Domain.Entities.LogisticsContainer entity)
+    {
+        return new LogisticsContainerDto
+        {
+            ContainerCode = entity.ContainerCode,
+            ContainerName = entity.ContainerName,
+            LogisticsLineCode = entity.LogisticsLineCode,
+            ContainerType = entity.ContainerType,
+            Status = entity.Status,
+            CurrentLocation = entity.CurrentLocation,
+            Capacity = entity.Capacity,
+            CreateTime = entity.CreateTime
+        };
+    }
+}
+```
+
+**说明：**
+- 通过构造函数注入 Repository 和 Logger
+- 业务逻辑在这里编排
+- 使用 ILogger 记录关键操作
+- 实体到 DTO 的转换在这里完成
+
+---
+
+### 步骤 7：Controllers 层 - 创建控制器
+
+**文件位置：** `Controllers/Query/LogisticsContainerController.cs`
+
+```csharp
+using Microsoft.AspNetCore.Mvc;
+using LogisticsProduction.Net8.Application.Dtos;
+using LogisticsProduction.Net8.Application.Queries.LogisticsContainer;
+using LogisticsProduction.Net8.Models.Responses;
+
+namespace LogisticsProduction.Net8.Controllers.Query;
+
+/// <summary>
+/// 物流线容器查询控制器
+/// </summary>
+[ApiController]
+[Route("api/query/container")]
+public class LogisticsContainerController : ControllerBase
+{
+    private readonly ILogisticsContainerQueryService _queryService;
+
+    public LogisticsContainerController(ILogisticsContainerQueryService queryService)
+    {
+        _queryService = queryService;
+    }
+
+    /// <summary>
+    /// 获取容器列表
+    /// </summary>
+    [HttpGet("list")]
+    public async Task<IActionResult> GetContainerList([FromQuery] ContainerQueryRequest request)
+    {
+        var result = await _queryService.GetContainerListAsync(request);
+        return Ok(ApiResponse.Success(result));
+    }
+
+    /// <summary>
+    /// 获取容器详情
+    /// </summary>
+    [HttpGet("detail/{containerCode}")]
+    public async Task<IActionResult> GetContainerDetail(string containerCode)
+    {
+        var result = await _queryService.GetContainerDetailAsync(containerCode);
+        if (result == null)
+        {
+            return Ok(ApiResponse.Fail("NOT_FOUND", "容器不存在"));
+        }
+        return Ok(ApiResponse.Success(result));
+    }
+
+    /// <summary>
+    /// 根据物流线获取容器
+    /// </summary>
+    [HttpGet("by-line/{logisticsLineCode}")]
+    public async Task<IActionResult> GetContainersByLine(string logisticsLineCode)
+    {
+        var result = await _queryService.GetContainersByLineAsync(logisticsLineCode);
+        return Ok(ApiResponse.Success(result));
+    }
+}
+```
+
+**说明：**
+- 继承 `ControllerBase`（API 控制器）
+- 使用 `[ApiController]` 特性（自动模型验证）
+- 使用 `[Route]` 定义路由
+- 方法体极简（不超过 15 行）
+
+---
+
+### 步骤 8：DI 注册
+
+**文件位置：** `Infrastructure/InfrastructureModule.cs`
+
+在 `Load` 方法中添加：
+```csharp
+// 物流容器模块
+builder.RegisterType<LogisticsContainerRepository>()
+    .As<ILogisticsContainerRepository>()
+    .InstancePerLifetimeScope();
+
+builder.RegisterType<LogisticsContainerQueryService>()
+    .As<ILogisticsContainerQueryService>()
+    .InstancePerLifetimeScope();
+```
+
+---
+
+## 业务专用日志配置
+
+### 方式一：使用 NLog 配置（推荐）
+
+**文件位置：** `nlog.config`
+
+添加专用日志目标：
+```xml
+<targets>
+  <!-- 通用日志 -->
+  <target xsi:type="File" name="allfile" 
+          fileName="Logs/${shortdate}.log" />
+
+  <!-- 物流容器业务专用日志 -->
+  <target xsi:type="File" name="containerLog"
+          fileName="Logs/Container/${shortdate}_container.log"
+          layout="${longdate}|${level:uppercase=true}|${message}${onexception:${newline}${exception:format=tostring}}" />
+
+  <target xsi:type="Console" name="console" />
+</targets>
+
+<rules>
+  <!-- 所有日志写入通用文件 -->
+  <logger name="*" minlevel="Debug" writeTo="allfile" />
+  
+  <!-- 容器相关日志额外写入专用文件 -->
+  <logger name="LogisticsProduction.Net8.Application.Queries.LogisticsContainer.*" 
+          minlevel="Debug" 
+          writeTo="containerLog" 
+          final="false" />
+  
+  <logger name="*" minlevel="Info" writeTo="console" />
+</rules>
+```
+
+**说明：**
+- 通过 logger name 匹配命名空间
+- `final="false"` 表示继续传递到其他规则
+- 容器日志会同时写入通用日志和专用日志
+
+### 方式二：使用自定义 Logger
+
+**文件位置：** `Infrastructure/Logging/ContainerLogger.cs`
+
+```csharp
+namespace LogisticsProduction.Net8.Infrastructure.Logging;
+
+/// <summary>
+/// 容器业务专用日志记录器
+/// </summary>
+public class ContainerLogger
+{
+    private readonly ILogger<ContainerLogger> _logger;
+
+    public ContainerLogger(ILogger<ContainerLogger> logger)
+    {
+        _logger = logger;
+    }
+
+    public void LogQuery(string containerCode, string operation)
+    {
+        _logger.LogInformation("[容器查询] 容器编码: {ContainerCode}, 操作: {Operation}", 
+            containerCode, operation);
+    }
+
+    public void LogOperation(string containerCode, string operation, object? data = null)
+    {
+        _logger.LogInformation("[容器操作] 容器编码: {ContainerCode}, 操作: {Operation}, 数据: {@Data}", 
+            containerCode, operation, data);
+    }
+
+    public void LogError(string containerCode, string operation, Exception ex)
+    {
+        _logger.LogError(ex, "[容器错误] 容器编码: {ContainerCode}, 操作: {Operation}", 
+            containerCode, operation);
+    }
+}
+```
+
+在 Service 中使用：
+```csharp
+public class LogisticsContainerQueryService : ILogisticsContainerQueryService
+{
+    private readonly ILogisticsContainerRepository _repository;
+    private readonly ContainerLogger _containerLogger;
+
+    public LogisticsContainerQueryService(
+        ILogisticsContainerRepository repository,
+        ContainerLogger containerLogger)
+    {
+        _repository = repository;
+        _containerLogger = containerLogger;
+    }
+
+    public async Task<LogisticsContainerDto?> GetContainerDetailAsync(string containerCode)
+    {
+        _containerLogger.LogQuery(containerCode, "获取详情");
+        
+        var container = await _repository.GetByContainerCodeAsync(containerCode);
+        
+        if (container == null)
+        {
+            _containerLogger.LogError(containerCode, "获取详情", 
+                new Exception("容器不存在"));
+            return null;
+        }
+
+        return MapToDto(container);
+    }
+}
+```
+
+---
+
+## 完整的文件目录结构
+
+```
+LogisticsProduction.Net8/
+├── Domain/
+│   ├── Entities/
+│   │   ├── BaseEntity.cs                          # 已存在
+│   │   └── LogisticsContainer.cs                  # 新增 ✓
+│   └── Interfaces/
+│       ├── IRepository.cs                         # 已存在
+│       └── ILogisticsContainerRepository.cs       # 新增 ✓
+│
+├── Infrastructure/
+│   ├── Persistence/
+│   │   ├── BaseRepository.cs                      # 已存在
+│   │   ├── DbContextFactory.cs                    # 已存在
+│   │   └── LogisticsContainerRepository.cs        # 新增 ✓
+│   └── Logging/
+│       └── ContainerLogger.cs                     # 新增（可选）✓
+│
+├── Application/
+│   ├── Dtos/
+│   │   ├── ProductDto.cs                          # 已存在
+│   │   └── LogisticsContainerDto.cs               # 新增 ✓
+│   └── Queries/
+│       └── LogisticsContainer/
+│           ├── ILogisticsContainerQueryService.cs # 新增 ✓
+│           └── LogisticsContainerQueryService.cs  # 新增 ✓
+│
+├── Controllers/
+│   └── Query/
+│       ├── ProductQueryController.cs              # 已存在
+│       └── LogisticsContainerController.cs        # 新增 ✓
+│
+├── nlog.config                                    # 修改（添加容器日志规则）✓
+└── Infrastructure/InfrastructureModule.cs         # 修改（注册新组件）✓
+```
+
+---
+
+## 数据库表创建
+
+### 方式一：手动创建表
+
+```sql
+CREATE TABLE LogisticsContainer (
+    ContainerCode NVARCHAR(50) PRIMARY KEY,
+    ContainerName NVARCHAR(100) NOT NULL,
+    LogisticsLineCode NVARCHAR(50) NOT NULL,
+    ContainerType NVARCHAR(50) NOT NULL,
+    Status NVARCHAR(20) NOT NULL,
+    CurrentLocation NVARCHAR(100),
+    Capacity DECIMAL(18,2) NOT NULL,
+    IsEnabled BIT NOT NULL DEFAULT 1,
+    Remark NVARCHAR(500),
+    CreateTime DATETIME NOT NULL DEFAULT GETDATE(),
+    UpdateTime DATETIME
+);
+
+CREATE INDEX IX_LogisticsContainer_LineCode ON LogisticsContainer(LogisticsLineCode);
+CREATE INDEX IX_LogisticsContainer_Status ON LogisticsContainer(Status);
+```
+
+### 方式二：使用 SqlSugar CodeFirst
+
+在 `Program.cs` 中添加：
+```csharp
+// 开发环境自动创建表
+if (app.Environment.IsDevelopment())
+{
+    var dbFactory = app.Services.GetRequiredService<DbContextFactory>();
+    var db = dbFactory.CreateClient();
+    db.CodeFirst.InitTables<LogisticsContainer>();
+}
+```
+
+---
+
+## API 测试
+
+### Swagger 测试
+启动项目后访问：`https://localhost:5001/swagger`
+
+### 接口示例
+
+**1. 获取容器列表**
+```
+GET /api/query/container/list?logisticsLineCode=LINE001&status=空闲
+```
+
+响应：
+```json
+{
+  "code": "00",
+  "message": "操作成功",
+  "data": [
+    {
+      "containerCode": "C001",
+      "containerName": "托盘001",
+      "logisticsLineCode": "LINE001",
+      "containerType": "托盘",
+      "status": "空闲",
+      "currentLocation": "A区01号位",
+      "capacity": 100.00,
+      "createTime": "2026-03-25T10:00:00"
+    }
+  ],
+  "timestamp": "2026-03-25T10:30:00"
+}
+```
+
+**2. 获取容器详情**
+```
+GET /api/query/container/detail/C001
+```
+
+**3. 根据物流线获取容器**
+```
+GET /api/query/container/by-line/LINE001
+```
+
+---
+
+## 日志查看
+
+### 通用日志
+位置：`Logs/2026-03-25.log`
+
+### 容器专用日志
+位置：`Logs/Container/2026-03-25_container.log`
+
+内容示例：
+```
+2026-03-25 10:30:15.123|INFO|查询容器列表，参数: {"LogisticsLineCode":"LINE001","Status":"空闲"}
+2026-03-25 10:30:15.456|INFO|查询到 5 条容器记录
+2026-03-25 10:31:20.789|INFO|查询容器详情，容器编码: C001
+```
+
+---
+
+## 开发检查清单
+
+完成一个新功能后，检查以下项：
+
+- [ ] Domain 层实体定义完整，无外部依赖
+- [ ] Domain 层接口定义清晰
+- [ ] Infrastructure 层实现了接口
+- [ ] 所有 SQL 操作使用参数化查询（Lambda 表达式）
+- [ ] Application 层定义了 DTO
+- [ ] Application 层实现了业务逻辑
+- [ ] Controller 方法体不超过 15 行
+- [ ] 所有组件已在 DI 容器中注册
+- [ ] 关键操作有日志记录
+- [ ] API 有 Swagger 注释
+- [ ] 已测试主要场景
+
+---
+
+## 常见问题
+
+### Q1：实体类需要添加 SqlSugar 注解吗？
+**A：** 可以添加，但不是必须的。推荐方式：
+```csharp
+[SugarTable("LogisticsContainer")]  // 指定表名
+public class LogisticsContainer : BaseEntity
+{
+    [SugarColumn(IsPrimaryKey = true)]  // 主键
+    public string ContainerCode { get; set; }
+}
+```
+
+### Q2：如何处理复杂查询？
+**A：** 在 Repository 中添加专用方法：
+```csharp
+public async Task<List<LogisticsContainer>> GetAvailableContainersAsync(
+    string logisticsLineCode, 
+    decimal minCapacity)
+{
+    return await Db.Queryable<LogisticsContainer>()
+        .Where(c => c.LogisticsLineCode == logisticsLineCode)
+        .Where(c => c.Status == "空闲")
+        .Where(c => c.Capacity >= minCapacity)
+        .Where(c => c.IsEnabled)
+        .ToListAsync();
+}
+```
+
+### Q3：如何处理事务？
+**A：** 在 Service 层使用：
+```csharp
+public async Task<bool> TransferContainerAsync(string containerCode, string newLocation)
+{
+    try
+    {
+        _repository.BeginTransaction();
+        
+        // 操作 1
+        await _repository.UpdateLocationAsync(containerCode, newLocation);
+        
+        // 操作 2
+        await _logRepository.InsertAsync(new TransferLog { ... });
+        
+        _repository.CommitTransaction();
+        return true;
+    }
+    catch
+    {
+        _repository.RollbackTransaction();
+        throw;
+    }
+}
+```
+
+### Q4：如何添加参数校验？
+**A：** 使用 Data Annotations：
+```csharp
+public class ContainerQueryRequest
+{
+    [StringLength(50)]
+    public string? LogisticsLineCode { get; set; }
+
+    [RegularExpression("^(空闲|使用中|维护中)$")]
+    public string? Status { get; set; }
+}
+```
+
+---
+
+## 性能优化建议
+
+### 1. 使用异步方法
+所有 I/O 操作（数据库、HTTP）都使用 async/await。
+
+### 2. 避免 N+1 查询
+```csharp
+// 不好：N+1 查询
+foreach (var container in containers)
+{
+    container.Line = await _lineRepository.GetByCodeAsync(container.LogisticsLineCode);
+}
+
+// 好：一次查询
+var lineCodes = containers.Select(c => c.LogisticsLineCode).Distinct().ToList();
+var lines = await _lineRepository.GetByCodesAsync(lineCodes);
+```
+
+### 3. 使用缓存
+```csharp
+private readonly IMemoryCache _cache;
+
+public async Task<List<LogisticsContainerDto>> GetContainerListAsync(...)
+{
+    var cacheKey = $"containers_{request.LogisticsLineCode}";
+    
+    if (_cache.TryGetValue(cacheKey, out List<LogisticsContainerDto> cached))
+    {
+        return cached;
+    }
+
+    var result = await _repository.GetByLogisticsLineAsync(...);
+    _cache.Set(cacheKey, result, TimeSpan.FromMinutes(5));
+    
+    return result;
+}
+```
+
+---
+
+## 总结
+
+**新功能开发流程：**
+1. Domain 层：定义实体和接口（10 分钟）
+2. Infrastructure 层：实现 Repository（20 分钟）
+3. Application 层：定义 DTO、接口、实现 Service（30 分钟）
+4. Controllers 层：创建 Controller（10 分钟）
+5. DI 注册（5 分钟）
+6. 配置日志（5 分钟）
+7. 测试（30 分钟）
+
+**总耗时：约 2 小时**
+
+遵循这个流程，代码结构清晰，易于维护和测试。
