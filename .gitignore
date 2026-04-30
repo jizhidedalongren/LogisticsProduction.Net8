@@ -1,23 +1,63 @@
-## .NET
+## .NET Build Output
 bin/
 obj/
 *.user
 *.suo
+*.cache
 .vs/
+.idea/
 
 ## Logs
 Logs/
 *.log
 
-## Sensitive configuration
+## Sensitive Configuration Files
+# 所有环境配置文件（包含数据库连接字符串、密码等敏感信息）
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
 appsettings.*.json
-!appsettings.Development.json
-!appsettings.Production.json
-secrets.json
+!appsettings.json
 
-## Generated files (Entity Generator)
+# 用户机密
+secrets.json
+*.secrets.json
+
+# Web 配置（可能包含生产环境配置）
+web.config
+Web.config
+
+## Generated Files (Entity Generator)
 Generated/
 
-## Production sensitive files
-appsettings.Production.json
-web.config
+## Publish Output
+publish/
+Publish/
+
+## Backup Files
+*.Backup.tmp
+*.bak
+*.backup
+
+## Database Files
+*.mdf
+*.ldf
+*.db
+*.sqlite
+*.sqlite3
+
+## Environment Variables
+.env
+.env.local
+.env.*.local
+
+## IDE Specific
+.vscode/
+*.swp
+*.swo
+*~
+
+## OS Specific
+.DS_Store
+Thumbs.db
+desktop.ini

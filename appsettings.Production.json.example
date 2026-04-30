@@ -1,0 +1,12 @@
+{
+  "ConnectionStrings": {
+    "91Db": "YOUR_PRODUCTION_CONNECTION_STRING",
+    "MainDb": "YOUR_PRODUCTION_CONNECTION_STRING"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}

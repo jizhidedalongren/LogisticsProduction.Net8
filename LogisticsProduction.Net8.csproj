@@ -17,7 +17,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Domain\Entities\PritMod.cs" />
     <Compile Remove="Domain\Entities\SCLZQD2_BARCODE.cs" />
+    <Compile Remove="Tools\GenerateEntitiesProgram.cs" />
   </ItemGroup>
 
   <!-- 发布时排除 Development 配置文件 -->
@@ -41,7 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Domain\Entities\PritMod.cs" />
     <None Include="Domain\Entities\SCLZQD2_BARCODE.cs" />
+    <None Include="Tools\GenerateEntitiesProgram.cs" />
   </ItemGroup>
 
 </Project>
