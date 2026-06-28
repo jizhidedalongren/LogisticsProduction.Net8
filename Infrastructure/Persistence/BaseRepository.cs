@@ -10,11 +10,11 @@ namespace LogisticsProduction.Net8.Infrastructure.Persistence;
 /// </summary>
 public abstract class BaseRepository<T> where T : class, new()
 {
-    protected readonly SqlSugarClient Db;
+    protected readonly SqlSugarScope Db;
 
     protected BaseRepository(DbContextFactory dbFactory)
     {
-        Db = dbFactory.CreateClient();
+        Db = dbFactory.GetClient();
     }
 
     #region 基础 CRUD

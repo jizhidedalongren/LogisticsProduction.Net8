@@ -1,11 +1,12 @@
 using SqlSugar;
 
-namespace LogisticsProduction.Net8.Domain.Entities;
+namespace LogisticsProduction.Net8.Domain.Entities.MainDb;
 
 /// <summary>
 /// 物流线容器实体
 /// </summary>
 [SugarTable("LogisticsContainer")]
+[Tenant("MainDb")]
 public class LogisticsContainer : BaseEntity
 {
     /// <summary>

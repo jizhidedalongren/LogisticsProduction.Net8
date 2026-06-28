@@ -23,7 +23,7 @@ public class LogisticsContainerQueryService : ILogisticsContainerQueryService
     {
         _logger.LogInformation("查询容器列表，参数: {@Request}", request);
 
-        List<Domain.Entities.LogisticsContainer> containers;
+        List<Domain.Entities.MainDb.LogisticsContainer> containers;
 
         if (!string.IsNullOrEmpty(request.LogisticsLineCode))
         {
@@ -77,7 +77,7 @@ public class LogisticsContainerQueryService : ILogisticsContainerQueryService
         return containers.Select(MapToDto).ToList();
     }
 
-    private static LogisticsContainerDto MapToDto(Domain.Entities.LogisticsContainer entity)
+    private static LogisticsContainerDto MapToDto(Domain.Entities.MainDb.LogisticsContainer entity)
     {
         return new LogisticsContainerDto
         {

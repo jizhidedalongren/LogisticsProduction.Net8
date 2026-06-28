@@ -371,9 +371,9 @@ curl -X DELETE http://localhost:5000/dev/entity-generator/clean
 
 ## 📚 相关文档
 
-- [项目架构](../ARCHITECTURE.md)
-- [开发指南](../DEVELOPMENT_GUIDE.md)
-- [文档索引](../DOCS_INDEX.md)
+- [项目架构](../架构规范.md)
+- [开发指南](../开发指南.md)
+- [文档索引](../文档索引.md)
 
 ## 🎉 总结
 

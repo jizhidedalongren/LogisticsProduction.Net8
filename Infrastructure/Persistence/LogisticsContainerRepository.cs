@@ -1,4 +1,4 @@
-using LogisticsProduction.Net8.Domain.Entities;
+using LogisticsProduction.Net8.Domain.Entities.MainDb;
 using LogisticsProduction.Net8.Domain.Interfaces;
 
 namespace LogisticsProduction.Net8.Infrastructure.Persistence;

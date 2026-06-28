@@ -748,6 +748,6 @@ Test-NetConnection -ComputerName localhost -Port 8008
 ## 🎓 更多信息
 
 详细的架构说明和开发流程，请参考：
-- **ARCHITECTURE.md** - 项目架构和规范
-- **DEVELOPMENT_GUIDE.md** - 新功能开发流程
-- **SCAFFOLD_GUIDE.md** - 脚手架使用指南
+- [架构规范.md](架构规范.md) - 项目架构和规范
+- [开发指南.md](开发指南.md) - 新功能开发流程
+- [脚手架指南.md](脚手架指南.md) - 脚手架使用指南

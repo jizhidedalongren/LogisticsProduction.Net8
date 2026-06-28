@@ -1,13 +1,14 @@
 ﻿using SqlSugar;
 
-namespace LogisticsProduction.Net8.Domain.Entities
+namespace LogisticsProduction.Net8.Domain.Entities.Db91;
+
+///<summary>
+///
+///</summary>
+[SugarTable("SCLZQD2_BARCODE")]
+[Tenant("91Db")]
+public partial class SCLZQD2_BARCODE
 {
-    ///<summary>
-    ///
-    ///</summary>
-    [SugarTable("SCLZQD2_BARCODE")]
-    public partial class SCLZQD2_BARCODE
-    {
            public SCLZQD2_BARCODE(){
 
             this.PRINT_BJ =Convert.ToInt32("0");
@@ -48,7 +49,7 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:False
            /// </summary>           
-           public string CODE {get;set;}
+           public string?CODE {get;set;}
 
            /// <summary>
            /// Desc:
@@ -63,35 +64,35 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Nullable:False
            /// </summary>           
            [SugarColumn(IsPrimaryKey=true)]
-           public string BARCODE {get;set;}
+           public string?BARCODE {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:False
            /// </summary>           
-           public string LSBH {get;set;}
+           public string?LSBH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:False
            /// </summary>           
-           public string FLBH {get;set;}
+           public string?FLBH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SCGPWGFPB_LSBH {get;set;}
+           public string?SCGPWGFPB_LSBH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SCGPWGFPB_FLBH {get;set;}
+           public string?SCGPWGFPB_FLBH {get;set;}
 
            /// <summary>
            /// Desc:
@@ -119,21 +120,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string CS {get;set;}
+           public string?CS {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string PRINT_DYR {get;set;}
+           public string?PRINT_DYR {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string PRINT_TIME {get;set;}
+           public string?PRINT_TIME {get;set;}
 
            /// <summary>
            /// Desc:
@@ -147,21 +148,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string INDFC_TIME {get;set;}
+           public string?INDFC_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string INDFC_QRY {get;set;}
+           public string?INDFC_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string INDFC_WareHouseID {get;set;}
+           public string?INDFC_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -175,21 +176,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string OUTDFC_TIME {get;set;}
+           public string?OUTDFC_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string OUTDFC_QRY {get;set;}
+           public string?OUTDFC_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string OUTDFC_WareHouseID {get;set;}
+           public string?OUTDFC_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -203,21 +204,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TDWGQR_TIME {get;set;}
+           public string?TDWGQR_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TDWGQR_QRY {get;set;}
+           public string?TDWGQR_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TDWGQR_WareHouseID {get;set;}
+           public string?TDWGQR_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -231,21 +232,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string HDCJSH_TIME {get;set;}
+           public string?HDCJSH_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string HDCJSH_QRY {get;set;}
+           public string?HDCJSH_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string HDCJSH_WareHouseID {get;set;}
+           public string?HDCJSH_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -259,21 +260,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TDQDX_TIME {get;set;}
+           public string?TDQDX_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TDQDX_QRY {get;set;}
+           public string?TDQDX_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TDQDX_WareHouseID {get;set;}
+           public string?TDQDX_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -287,21 +288,21 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string INMFC_TIME {get;set;}
+           public string?INMFC_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string INMFC_QRY {get;set;}
+           public string?INMFC_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string INMFC_WareHouseID {get;set;}
+           public string?INMFC_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -322,91 +323,91 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string FHWZBJ {get;set;}
+           public string?FHWZBJ {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string DDBH {get;set;}
+           public string?DDBH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string HBDH {get;set;}
+           public string?HBDH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string RWDH {get;set;}
+           public string?RWDH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string WLBH {get;set;}
+           public string?WLBH {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string FlexField2 {get;set;}
+           public string?FlexField2 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string CJID {get;set;}
+           public string?CJID {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string JHLS {get;set;}
+           public string?JHLS {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string JHFL {get;set;}
+           public string?JHFL {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SJLY {get;set;}
+           public string?SJLY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string DWMC {get;set;}
+           public string?DWMC {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string CJLBMC {get;set;}
+           public string?CJLBMC {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string QDXPK_TIME {get;set;}
+           public string?QDXPK_TIME {get;set;}
 
            /// <summary>
            /// Desc:
@@ -434,14 +435,14 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SGTDWGQR_TIME {get;set;}
+           public string?SGTDWGQR_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SGTDWGQR_QRY {get;set;}
+           public string?SGTDWGQR_QRY {get;set;}
 
            /// <summary>
            /// Desc:
@@ -455,14 +456,14 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SGPMWGQR_TIME {get;set;}
+           public string?SGPMWGQR_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SGPMWGQR_QRY {get;set;}
+           public string?SGPMWGQR_QRY {get;set;}
 
            /// <summary>
            /// Desc:
@@ -476,35 +477,35 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string FlexField1 {get;set;}
+           public string?FlexField1 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string FlexField3 {get;set;}
+           public string?FlexField3 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string FlexField4 {get;set;}
+           public string?FlexField4 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string FlexField5 {get;set;}
+           public string?FlexField5 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string TMHB {get;set;}
+           public string?TMHB {get;set;}
 
            /// <summary>
            /// Desc:
@@ -525,28 +526,28 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string ZDR {get;set;}
+           public string?ZDR {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string GOODSMOVEMENTID {get;set;}
+           public string?GOODSMOVEMENTID {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SGFDWGQR_TIME {get;set;}
+           public string?SGFDWGQR_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SGFDWGQR_QRY {get;set;}
+           public string?SGFDWGQR_QRY {get;set;}
 
            /// <summary>
            /// Desc:
@@ -560,42 +561,42 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SFBS {get;set;}
+           public string?SFBS {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SFCJ {get;set;}
+           public string?SFCJ {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string BARCODE_DDBB {get;set;}
+           public string?BARCODE_DDBB {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string RSDMQR_TIME {get;set;}
+           public string?RSDMQR_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string RSDMQR_QRY {get;set;}
+           public string?RSDMQR_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string RSDMQR_WareHouseID {get;set;}
+           public string?RSDMQR_WareHouseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -609,35 +610,35 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SCGPWGFPB_LSFL {get;set;}
+           public string?SCGPWGFPB_LSFL {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SCGPWGFPB_MPPlanOrderOPID {get;set;}
+           public string?SCGPWGFPB_MPPlanOrderOPID {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SampleScan_TIME {get;set;}
+           public string?SampleScan_TIME {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SampleScan_QRY {get;set;}
+           public string?SampleScan_QRY {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string SampleScan_WareHourseID {get;set;}
+           public string?SampleScan_WareHourseID {get;set;}
 
            /// <summary>
            /// Desc:
@@ -651,28 +652,27 @@ namespace LogisticsProduction.Net8.Domain.Entities
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string CSCX {get;set;}
+           public string?CSCX {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string CustomField1 {get;set;}
+           public string?CustomField1 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string CustomField2 {get;set;}
+           public string?CustomField2 {get;set;}
 
            /// <summary>
            /// Desc:
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string Batch {get;set;}
+           public string?Batch {get;set;}
 
     }
-}

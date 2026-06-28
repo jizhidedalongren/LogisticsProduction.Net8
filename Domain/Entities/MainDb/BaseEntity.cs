@@ -1,4 +1,4 @@
-namespace LogisticsProduction.Net8.Domain.Entities;
+namespace LogisticsProduction.Net8.Domain.Entities.MainDb;
 
 /// <summary>
 /// 实体基类

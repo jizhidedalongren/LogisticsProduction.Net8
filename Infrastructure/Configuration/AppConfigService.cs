@@ -22,6 +22,15 @@ public class AppConfigService
         return connStr;
     }
 
+    /// <summary>
+    /// 读取连接字符串，未配置时返回 null（不抛异常）。
+    /// 用于多库场景下可选数据库（如 91Db）的判断，避免生产环境未配置时启动崩溃。
+    /// </summary>
+    public string? GetConnectionStringOrNull(string name)
+    {
+        return _configuration.GetConnectionString(name);
+    }
+
     public string GetAppSetting(string key, string defaultValue = "")
     {
         return _configuration[key] ?? defaultValue;

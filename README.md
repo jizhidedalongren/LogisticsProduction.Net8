@@ -2,14 +2,15 @@
 
 ## 📖 文档导航
 
-- 📚 **[文档索引](docs/DOCS_INDEX.md)** - 完整文档导航
-- ⚡ **[快速参考](docs/QUICK_REFERENCE.md)** - 常用命令速查卡片
-- 🔌 **[端口配置](docs/PORT_CONFIG_GUIDE.md)** - 端口配置完整指南
-- 🏗️ **[架构规范](docs/ARCHITECTURE.md)** - 项目架构和开发规范
-- 📝 **[开发指南](docs/DEVELOPMENT_GUIDE.md)** - 新功能开发流程
-- 🚀 **[部署指南](docs/DEPLOYMENT_WINDOWS.md)** - Windows 部署完整说明
-- 🛠️ **[脚手架指南](docs/SCAFFOLD_GUIDE.md)** - 脚手架工具使用
-- 🔄 **[实体生成器指南](docs/entity-generator/README.md)** - SqlSugar 实体类生成 ⭐
+- 📚 **[文档索引](docs/项目文档/文档索引.md)** - 完整文档导航
+- ⚡ **[快速参考](docs/项目文档/快速参考.md)** - 常用命令速查卡片
+- 🔌 **[端口配置](docs/项目文档/端口配置指南.md)** - 端口配置完整指南
+- 🏗️ **[架构规范](docs/项目文档/架构规范.md)** - 项目架构和开发规范
+- 📝 **[开发指南](docs/项目文档/开发指南.md)** - 新功能开发流程
+- 🚀 **[部署指南](docs/项目文档/Windows部署指南.md)** - Windows 部署完整说明
+- 🛠️ **[脚手架指南](docs/项目文档/脚手架指南.md)** - 脚手架工具使用
+- 🔄 **[实体生成器指南](docs/项目文档/实体生成器/README.md)** - SqlSugar 实体类生成 ⭐
+- 🗄️ **[多数据库方案](docs/项目文档/多数据库指南.md)** - 多数据库实体存放与访问方案
 
 ---
 
@@ -100,13 +101,13 @@ Compress-Archive -Path .\publish\* -DestinationPath LogisticsProduction.zip
 .\scripts\deploy.ps1 -Environment Production
 ```
 
-详细部署说明参考 `docs/DEPLOYMENT_WINDOWS.md`
+详细部署说明参考 `docs/项目文档/Windows部署指南.md`
 
 ## 📖 文档
 
-- **docs/ARCHITECTURE.md** - 项目架构和开发规范
-- **docs/DEVELOPMENT_GUIDE.md** - 新功能开发流程
-- **docs/DEPLOYMENT_WINDOWS.md** - Windows 部署完整指南
+- **docs/项目文档/架构规范.md** - 项目架构和开发规范
+- **docs/项目文档/开发指南.md** - 新功能开发流程
+- **docs/项目文档/Windows部署指南.md** - Windows 部署完整指南
 
 ## 🛠️ 开发工具
 
@@ -141,7 +142,7 @@ Body: {
 
 生成的文件位于 `Generated/Entities/`，手动复制到 `Domain/Entities/`。
 
-详细说明：**[docs/entity-generator/README.md](docs/entity-generator/README.md)** ⭐
+详细说明：**[docs/项目文档/实体生成器/README.md](docs/项目文档/实体生成器/README.md)** ⭐
 
 #### 方式 B：在代码中使用
 
@@ -162,26 +163,7 @@ generator.GenerateEntity("Product");
 generator.GenerateEntityWithBase("Product");
 ```
 
-#### 方式 B：在代码中使用
-
-```csharp
-using LogisticsProduction.Net8.Tools;
-
-// 创建生成器
-var connectionString = Configuration.GetConnectionString("MainDb");
-var generator = new EntityGenerator(connectionString!, "Domain/Entities");
-
-// 生成所有表
-generator.GenerateAllEntities();
-
-// 生成指定表
-generator.GenerateEntity("Product");
-
-// 生成指定表（继承 BaseEntity，自动跳过审计字段）
-generator.GenerateEntityWithBase("Product");
-```
-
-详细说明：**[HOW_TO_USE_ENTITY_GENERATOR.md](HOW_TO_USE_ENTITY_GENERATOR.md)**
+详细说明：**[docs/项目文档/实体生成器/README.md](docs/项目文档/实体生成器/README.md)**
 
 #### 方式 C：使用 PowerShell 脚本
 
@@ -299,7 +281,7 @@ public class Product : BaseEntity
 | varchar/nvarchar | string |
 | uniqueidentifier | Guid |
 
-详细使用说明参考 `ENTITY_GENERATION_GUIDE.md`
+详细使用说明参考 [docs/项目文档/实体生成器/README.md](docs/项目文档/实体生成器/README.md)
 
 ### 脚手架生成器
 
@@ -328,7 +310,7 @@ public class Product : BaseEntity
 - Controllers 层 API 端点
 - 数据库建表 SQL 脚本
 
-详细使用说明参考 `docs/SCAFFOLD_GUIDE.md`
+详细使用说明参考 `docs/项目文档/脚手架指南.md`
 
 **注意：** 所有包含中文的 PowerShell 脚本均使用 UTF-8 BOM 编码保存，确保中文正确显示。
 
@@ -546,7 +528,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 4. **Controllers 层** - 创建 API 端点
 5. **DI 注册** - 在 InfrastructureModule 中注册
 
-详细步骤参考 `docs/DEVELOPMENT_GUIDE.md`
+详细步骤参考 `docs/项目文档/开发指南.md`
 
 ## 📊 技术栈
 
@@ -573,4 +555,4 @@ Get-Website -Name "LogisticsProduction.API"
 Get-WebAppPoolState -Name "LogisticsProductionNet8"
 ```
 
-详细故障处理参考 `docs/DEPLOYMENT_WINDOWS.md`
+详细故障处理参考 `docs/项目文档/Windows部署指南.md`

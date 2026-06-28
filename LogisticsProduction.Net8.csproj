@@ -16,10 +16,10 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <!-- 排除归档目录下的代码文件，归档文件仅作历史参考，不参与编译 -->
   <ItemGroup>
-    <Compile Remove="Domain\Entities\PritMod.cs" />
-    <Compile Remove="Domain\Entities\SCLZQD2_BARCODE.cs" />
-    <Compile Remove="Tools\GenerateEntitiesProgram.cs" />
+    <Compile Remove="_archive\**\*.cs" />
   </ItemGroup>
 
   <!-- 发布时排除 Development 配置文件 -->
@@ -40,12 +40,6 @@
   <ItemGroup>
     <Folder Include="Generated\Entities\" />
     <Folder Include="Generated\Entities\91Db\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Domain\Entities\PritMod.cs" />
-    <None Include="Domain\Entities\SCLZQD2_BARCODE.cs" />
-    <None Include="Tools\GenerateEntitiesProgram.cs" />
   </ItemGroup>
 
 </Project>
